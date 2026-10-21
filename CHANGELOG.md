@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cryptographic SHA-256 event chaining for tamper-evident audit logs.
 - Path traversal protection on SQLite checkpoint/baseline file operations.
 - Non-destructive `SpanProcessor` attachment to host OpenTelemetry pipelines.
+- Automated multi-version GitHub Actions CI test matrix (Python 3.11, 3.12, 3.13) and Ruff static analysis.
 
 ---
 

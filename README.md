@@ -1,7 +1,8 @@
 # AgentGuard
 
-**Zero-Overhead Runtime Security & Predictive Defense for Autonomous LLM Agents**
+**Lightweight Runtime Security & Predictive Defense for Autonomous LLM Agents**
 
+[![CI](https://github.com/Somanath-existing/agentguard/actions/workflows/ci.yml/badge.svg)](https://github.com/Somanath-existing/agentguard/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 [![Python Versions](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg?style=flat-square)](https://www.python.org/)
 [![OpenTelemetry Native](https://img.shields.io/badge/OTel-Native-orange.svg?style=flat-square)](https://opentelemetry.io/)
@@ -120,11 +121,14 @@ This simulates real-time OpenTelemetry LLM/tool spans, demonstrating clean execu
 ### Installation
 
 ```bash
-# Core lightweight installation
-pip install agentguard
+# Install directly from GitHub (latest v0.3.0)
+pip install git+https://github.com/Somanath-existing/agentguard.git
 
 # With full OpenTelemetry auto-instrumentation
-pip install "agentguard[all]"
+pip install "agentguard[all] @ git+https://github.com/Somanath-existing/agentguard.git"
+
+# Or install from source in editable mode
+pip install -e ".[dev,all]"
 ```
 
 ### Minimal Integration
@@ -198,8 +202,8 @@ with orchestrator.watch("orch-001"):
 
 ## Security & Privacy Architecture
 
-*   **Zero Raw Data Retention:** AgentGuard never writes raw model completions or user prompts to disk or network sockets. The system relies entirely on SHA-256 cryptographic digests of inputs and outputs for state matching.
-*   **Data Minimization Compliance:** Aligns with enterprise data residency standards by design. Only metadata (latencies, token counts, error classes, status codes) is collected.
+*   **Privacy-Preserving Forensic Logging:** AgentGuard avoids storing full user prompts or completion streams on disk. State matching and taint tracking rely on SHA-256 cryptographic digests, with only bounded diagnostic excerpts (up to 80 chars) captured in forensic audit trails upon security rule violations.
+*   **Data Minimization Compliance:** Aligns with enterprise data residency standards by design. Only execution metadata (latencies, token counts, error classes, status codes) is collected during standard operations.
 *   **Idempotent Integration:** Attaches to existing `TracerProvider` pipelines without overwriting host telemetry configuration.
 
 ---
