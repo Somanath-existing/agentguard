@@ -3,8 +3,6 @@ tests/test_cost.py
 """
 from __future__ import annotations
 
-import pytest
-
 from agentguard.cost import CostGuardian
 from agentguard.models import StepEvent
 

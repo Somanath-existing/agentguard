@@ -18,13 +18,13 @@ Security notes:
 
 from __future__ import annotations
 
-import logging
-import threading
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Optional
-
 import io
+import logging
 import sys
+import threading
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -71,11 +71,11 @@ class GuardSession:
         self,
         run_id: str,
         guard,                           # Guard instance (avoids circular import)
-        store: "CheckpointStore",
-        cost: "CostGuardian",
-        recovery: "RecoveryRouter",
+        store: CheckpointStore,
+        cost: CostGuardian,
+        recovery: RecoveryRouter,
         enforce_abort: bool = True,      # NEW: actually kill the agent on abort
-        taint_tracker: Optional["TaintTracker"] = None,
+        taint_tracker: TaintTracker | None = None,
     ):
         self.run_id = run_id
         self._guard = guard
@@ -90,11 +90,11 @@ class GuardSession:
         self._recovery_actions: list[dict] = []
         self._aborted: bool = False
         self._abort_reason: str = ""
-        self._last_signal_type: Optional[str] = None  # for recovery outcome tracking
+        self._last_signal_type: str | None = None  # for recovery outcome tracking
 
         # Force UTF-8 output on Windows to avoid CP1252 emoji encoding errors
         self._console = Console(file=SafeTextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace") if hasattr(sys.stdout, 'buffer') else sys.stdout, highlight=True)
-        self._start_time = datetime.now(tz=timezone.utc)
+        self._start_time = datetime.now(tz=UTC)
 
         # Record session start in audit log
         self._store.save_audit_event(
@@ -215,7 +215,7 @@ class GuardSession:
     # Context manager
     # ------------------------------------------------------------------
 
-    def __enter__(self) -> "GuardSession":
+    def __enter__(self) -> GuardSession:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -250,7 +250,7 @@ class GuardSession:
         Print a rich terminal report and return a plain-text summary string.
         Never includes raw LLM content — metadata only.
         """
-        elapsed = (datetime.now(tz=timezone.utc) - self._start_time).total_seconds()
+        elapsed = (datetime.now(tz=UTC) - self._start_time).total_seconds()
 
         # ── Main metrics table ──────────────────────────────────────────
         table = Table(

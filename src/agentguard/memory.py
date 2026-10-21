@@ -21,7 +21,6 @@ import json
 import logging
 import os
 import threading
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +73,8 @@ class RecoveryMemory:
         Return the historically highest-success-rate action using UCB1 selection.
         If epsilon > 0, performs epsilon-greedy exploration.
         """
-        import random
         import math
+        import random
 
         key = f"{signal_type}:{agent_type}"
         with self._lock:
@@ -107,7 +106,7 @@ class RecoveryMemory:
 
         return best_action
 
-    def success_rate(self, signal_type: str, agent_type: str, action: str) -> Optional[float]:
+    def success_rate(self, signal_type: str, agent_type: str, action: str) -> float | None:
         """Return observed success rate for a specific action, or None if no data."""
         key = f"{signal_type}:{agent_type}"
         with self._lock:

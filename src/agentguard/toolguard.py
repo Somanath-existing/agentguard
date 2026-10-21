@@ -30,8 +30,8 @@ import fnmatch
 import logging
 import re
 import threading
-from dataclasses import dataclass, field
-from typing import Callable, Optional
+from collections.abc import Callable
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class ToolAuthResult:
     allowed: bool
     tool_name: str
     reason: str
-    matched_rule: Optional[str] = None  # which pattern matched
+    matched_rule: str | None = None  # which pattern matched
 
 
 # ---------------------------------------------------------------------------
@@ -78,10 +78,10 @@ class ToolGuard:
 
     def __init__(
         self,
-        allowlist: Optional[list[str]] = None,
-        denylist: Optional[list[str]] = None,
+        allowlist: list[str] | None = None,
+        denylist: list[str] | None = None,
         arg_inspection: bool = True,
-        custom_validators: Optional[list[Callable[[str, str], Optional[str]]]] = None,
+        custom_validators: list[Callable[[str, str], str | None]] | None = None,
     ):
         """
         Args:
@@ -196,7 +196,7 @@ class ToolGuard:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _match_patterns(name: str, patterns: list[str]) -> Optional[str]:
+    def _match_patterns(name: str, patterns: list[str]) -> str | None:
         """Return the first matching pattern, or None."""
         for pattern in patterns:
             if fnmatch.fnmatch(name, pattern):

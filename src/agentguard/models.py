@@ -18,12 +18,12 @@ Security notes:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Literal, Optional
+from datetime import UTC, datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
-import re
 
 # Precompile regexes and define translation map for Untrusted sanitize to avoid overhead in hot path
 _CONFUSABLE_MAP = str.maketrans({
@@ -155,11 +155,11 @@ class StepEvent(BaseModel):
     step_number: int
     span_id: str
     span_name: str                     # e.g. "tool.web_search"
-    tool_name: Optional[str] = None
+    tool_name: str | None = None
 
     # SHA-256 hex digest of the raw input — used for loop detection.
     # Raw prompt text is NEVER stored here.
-    input_hash: Optional[str] = None
+    input_hash: str | None = None
 
     output_size: int = 0               # character count of output
     tokens_in: int = 0
@@ -169,12 +169,12 @@ class StepEvent(BaseModel):
 
     # Sanitized error type string — callers must call Untrusted.sanitize()
     # before assigning here.
-    error_type: Optional[str] = None
+    error_type: str | None = None
 
     # Fix: default_factory ensures each instance gets the current time, not
     # the class-definition time.
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(tz=timezone.utc)
+        default_factory=lambda: datetime.now(tz=UTC)
     )
 
     @field_validator("run_id")
@@ -187,7 +187,7 @@ class StepEvent(BaseModel):
 
     @field_validator("input_hash")
     @classmethod
-    def hash_looks_valid(cls, v: Optional[str]) -> Optional[str]:
+    def hash_looks_valid(cls, v: str | None) -> str | None:
         if v is None:
             return v
         if len(v) not in (16, 32, 64):
@@ -239,10 +239,10 @@ class AuditEntry(BaseModel):
     """
     run_id: str
     entry_type: Literal["recovery_action", "signal_fired", "budget_event", "session_start", "session_end", "tool_blocked"]
-    action: Optional[str] = None       # e.g. "retry", "abort", "downgrade_model"
-    triggered_by: Optional[str] = None # signal_type that caused this
-    step_number: Optional[int] = None
-    detail: Optional[str] = None
+    action: str | None = None       # e.g. "retry", "abort", "downgrade_model"
+    triggered_by: str | None = None # signal_type that caused this
+    step_number: int | None = None
+    detail: str | None = None
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(tz=timezone.utc)
+        default_factory=lambda: datetime.now(tz=UTC)
     )

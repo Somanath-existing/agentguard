@@ -74,12 +74,20 @@ testpaths = ["tests"]
 addopts = "-v --tb=short"
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "S"]
-ignore = ["S101"]   # allow assert in tests
+ignore = [
+    "E501",  # line length handled by formatting
+    "S101",  # allow assert in tests
+    "S311",  # standard random is fine for UCB1 bandit exploration
+    "S110",  # try-except-pass for optional payload decoding
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F841", "S105", "S106"]
 
 [tool.mypy]
 python_version = "3.11"

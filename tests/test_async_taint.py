@@ -6,14 +6,11 @@ Tests for:
 """
 
 import asyncio
-import os
-import tempfile
 
 import pytest
-from agentguard import Guard, AgentGuardAbort, TopologyTracker
-from agentguard.taint import TaintTracker
-from agentguard.models import StepEvent, FailureSignal
 
+from agentguard import AgentGuardAbort, Guard, TopologyTracker
+from agentguard.taint import TaintTracker
 
 # ═══════════════════════════════════════════════════════════════════════════
 # ASYNC SUPPORT — Guard.awatch()

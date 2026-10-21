@@ -23,10 +23,8 @@ import os
 import re
 import sqlite3
 import threading
-from typing import Optional
 
 from .models import AuditEntry, StepEvent
-
 
 # ---------------------------------------------------------------------------
 # run_id sanitization (also used by CheckpointStore and Guard)
@@ -191,7 +189,7 @@ class CheckpointStore:
             payload = json.dumps({"data": event.model_dump_json(), "trust_score": trust_score})
             self._redis.set(key, payload, ex=self._redis_ttl)
 
-    def last_trusted_step(self, min_trust: float = 0.7) -> Optional[StepEvent]:
+    def last_trusted_step(self, min_trust: float = 0.7) -> StepEvent | None:
         """Return the most recent step whose trust_score >= min_trust."""
         if self.backend == "sqlite":
             with self._db_lock:
@@ -204,7 +202,7 @@ class CheckpointStore:
             return StepEvent.model_validate_json(row[0]) if row else None
         else:
             pattern = f"{self._REDIS_NS}:steps:{self.run_id}:*"
-            best: Optional[StepEvent] = None
+            best: StepEvent | None = None
             best_step = -1
             for key in self._redis.scan_iter(pattern):
                 raw = self._redis.get(key)

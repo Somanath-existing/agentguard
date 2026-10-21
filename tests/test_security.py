@@ -13,7 +13,6 @@ import pytest
 from agentguard.models import AuditEntry, FailureSignal, StepEvent, Untrusted
 from agentguard.state import CheckpointStore, sanitize_run_id
 
-
 # ---------------------------------------------------------------------------
 # Untrusted sanitization
 # ---------------------------------------------------------------------------
@@ -218,7 +217,8 @@ class TestRecoveryRetryCAP:
     def test_inject_prompt_is_never_from_signal_detail(self):
         """The replan inject_prompt must always be the hardcoded string."""
         import tempfile
-        from agentguard.recovery import RecoveryRouter, _REPLAN_PROMPT
+
+        from agentguard.recovery import _REPLAN_PROMPT, RecoveryRouter
         with tempfile.TemporaryDirectory() as tmpdir:
             store = CheckpointStore("run-inject", base_dir=tmpdir)
             router = RecoveryRouter(store=store, config={"max_retries": 3})

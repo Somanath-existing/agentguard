@@ -27,7 +27,7 @@ import json
 import logging
 import threading
 import time
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -65,7 +65,7 @@ class RecoveryRouter:
         self,
         store: CheckpointStore,
         config: dict[str, Any],
-        memory: Optional[RecoveryMemory] = None,
+        memory: RecoveryMemory | None = None,
         agent_type: str = "default",
     ):
         self._store = store
@@ -75,7 +75,7 @@ class RecoveryRouter:
         self._max_retries: int = int(config.get("max_retries", 3))
         self._allow_downgrade: bool = bool(config.get("allow_model_downgrade", False))
         self._cheap_model: str = config.get("cheap_model", "claude-haiku-4-5-20251001")
-        self._memory: Optional[RecoveryMemory] = memory
+        self._memory: RecoveryMemory | None = memory
         self._agent_type: str = agent_type
 
         self._lock = threading.Lock()

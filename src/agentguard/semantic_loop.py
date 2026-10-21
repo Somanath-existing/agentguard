@@ -35,13 +35,12 @@ Usage:
 from __future__ import annotations
 
 import json
-import re
-import math
 import logging
+import math
+import re
 import threading
 from collections import Counter, deque
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +178,7 @@ class LoopCheckResult:
     velocity: float                # current semantic velocity (1 - sim to previous)
     ema_velocity: float            # smoothed velocity (EMA)
     confidence: float              # graduated confidence score (0.0 – 1.0)
-    tool_name: Optional[str]       # tool context this was evaluated against
+    tool_name: str | None       # tool context this was evaluated against
 
 
 # ---------------------------------------------------------------------------
@@ -306,8 +305,8 @@ class SemanticLoopDetector:
     def check(
         self,
         input_text: str,
-        tool_name: Optional[str] = None,
-    ) -> Optional[LoopCheckResult]:
+        tool_name: str | None = None,
+    ) -> LoopCheckResult | None:
         """
         Analyse a new agent step and return a LoopCheckResult if a loop is
         detected, or None if the agent's trajectory is healthy.
@@ -347,8 +346,8 @@ class SemanticLoopDetector:
     # ------------------------------------------------------------------
 
     def _check_with_embeddings(
-        self, input_text: str, tool_name: Optional[str]
-    ) -> Optional[LoopCheckResult]:
+        self, input_text: str, tool_name: str | None
+    ) -> LoopCheckResult | None:
         """
         Full detection pipeline using sentence-transformer embeddings.
 
@@ -436,8 +435,8 @@ class SemanticLoopDetector:
     # ------------------------------------------------------------------
 
     def _check_with_ngrams(
-        self, input_text: str, tool_name: Optional[str]
-    ) -> Optional[LoopCheckResult]:
+        self, input_text: str, tool_name: str | None
+    ) -> LoopCheckResult | None:
         """
         Conservative n-gram fallback with higher threshold (0.95).
 

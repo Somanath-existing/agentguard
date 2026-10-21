@@ -3,18 +3,17 @@ Tests for security features and core algorithms in AgentGuard.
 """
 import os
 import tempfile
-import json
 
 import pytest
-from agentguard.injection import scan_for_injection, InjectionResult
+
 from agentguard.baseline import BaselineStore, RunningStats
+from agentguard.injection import scan_for_injection
 from agentguard.memory import RecoveryMemory
-from agentguard.topology import TopologyTracker, AgentNode
+from agentguard.models import StepEvent
 from agentguard.replay import CausalReplayer
-from agentguard.models import StepEvent, FailureSignal
 from agentguard.signals import SignalEngine
 from agentguard.state import CheckpointStore
-
+from agentguard.topology import TopologyTracker
 
 # ═══════════════════════════════════════════════════════════════════════
 # Indirect Prompt Injection Detection
@@ -467,9 +466,10 @@ class TestGuardNewParams:
         assert "code_writer" in repr(g)
 
     def test_guard_watch_detaches_span_processor(self):
-        from agentguard import Guard
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
+
+        from agentguard import Guard
 
         g = Guard(enable_baseline=False, enable_memory=False)
 
@@ -494,9 +494,10 @@ class TestGuardNewParams:
 
 class TestTopologyIntegration:
     def test_shared_topology_records_tokens(self):
-        from agentguard import Guard, TopologyTracker
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
+
+        from agentguard import Guard, TopologyTracker
 
         topo = TopologyTracker(total_budget=5000)
         g = Guard(topology=topo, budget_tokens=10000, enforce_abort=True)
@@ -523,9 +524,10 @@ class TestTopologyIntegration:
         assert topo.total_tokens_used() == 1000
 
     def test_shared_topology_exceeds_budget(self):
-        from agentguard import Guard, TopologyTracker, AgentGuardAbort
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
+
+        from agentguard import AgentGuardAbort, Guard, TopologyTracker
 
         topo = TopologyTracker(total_budget=1000)
         # Main agent has a higher local budget (5000), but shared topology has only 1000
@@ -555,9 +557,10 @@ class TestTopologyIntegration:
 
 class TestInputInjectionScan:
     def test_scan_for_injection_in_input(self):
-        from agentguard import Guard, AgentGuardAbort
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
+
+        from agentguard import AgentGuardAbort, Guard
 
         g = Guard(budget_tokens=10000, enforce_abort=True)
 
@@ -588,8 +591,8 @@ class TestSemanticLoopSignalEngine:
         Semantic loop detection via SignalEngine — v2 requires consecutive
         stalls, so we send multiple identical prompts to trigger.
         """
-        from agentguard.signals import SignalEngine
         from agentguard.models import StepEvent
+        from agentguard.signals import SignalEngine
 
         engine = SignalEngine(run_id="semantic-loop-test", enable_semantic_loop=True)
 

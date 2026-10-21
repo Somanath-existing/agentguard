@@ -30,10 +30,9 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Callable
 from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Optional, Callable
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from opentelemetry.sdk.trace import TracerProvider  # only for static analysis
@@ -54,9 +53,9 @@ from .interceptor import AgentGuardProcessor
 from .memory import RecoveryMemory
 from .models import AgentGuardAbort
 from .recovery import RecoveryRouter
+from .self_test import GuardrailSelfTest
 from .semantic_loop import LoopCheckResult, SemanticLoopDetector, extract_active_prompt
 from .session import GuardSession
-from .self_test import GuardrailSelfTest
 from .state import CheckpointStore, sanitize_run_id
 from .taint import TaintTracker
 from .toolguard import ToolGuard
@@ -110,7 +109,7 @@ class Guard:
         self,
         budget_tokens: int = 100_000,
         on_failure: str = "replan",
-        alert_webhook: Optional[str] = None,
+        alert_webhook: str | None = None,
         webhook_secret: str = "",
         max_retries: int = 3,
         allow_model_downgrade: bool = False,
@@ -121,10 +120,10 @@ class Guard:
         warn_pct: float = 0.75,
         model: str = "claude-sonnet-4-6",
         enforce_abort: bool = True,
-        tool_allowlist: Optional[list[str]] = None,
-        tool_denylist: Optional[list[str]] = None,
+        tool_allowlist: list[str] | None = None,
+        tool_denylist: list[str] | None = None,
         tool_arg_inspection: bool = True,
-        tool_custom_validators: Optional[list[Callable[[str, str], Optional[str]]]] = None,
+        tool_custom_validators: list[Callable[[str, str], str | None]] | None = None,
         # ── Adaptive Behavioral Baseline ─────────────────────────────
         agent_type: str = "default",
         anomaly_threshold: float = 2.5,
@@ -134,8 +133,8 @@ class Guard:
         memory_dir: str = "./agentguard_memory",
         enable_memory: bool = True,
         # ── Multi-Agent Topology ─────────────────────────────────────────
-        topology: Optional[TopologyTracker] = None,
-        parent_run_id: Optional[str] = None,
+        topology: TopologyTracker | None = None,
+        parent_run_id: str | None = None,
         # ── Taint Tracking ──────────────────────────────────────────────
         enable_taint: bool = True,
         taint_chunk_size: int = 64,
@@ -164,7 +163,7 @@ class Guard:
         self._taint_chunk_size = taint_chunk_size
 
         # One BaselineStore per agent_type — persists across watch() calls
-        self._baseline: Optional[BaselineStore] = (
+        self._baseline: BaselineStore | None = (
             BaselineStore(
                 agent_type=agent_type,
                 base_dir=baseline_dir,
@@ -175,7 +174,7 @@ class Guard:
         )
 
         # One RecoveryMemory per Guard — persists across watch() calls
-        self._memory: Optional[RecoveryMemory] = (
+        self._memory: RecoveryMemory | None = (
             RecoveryMemory(base_dir=memory_dir)
             if enable_memory
             else None
@@ -270,7 +269,7 @@ class Guard:
         )
 
         # Create per-session taint tracker
-        taint_tracker: Optional[TaintTracker] = None
+        taint_tracker: TaintTracker | None = None
         if self._enable_taint:
             taint_tracker = TaintTracker(chunk_size=self._taint_chunk_size)
 

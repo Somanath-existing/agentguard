@@ -37,7 +37,6 @@ import logging
 import threading
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Optional
 
 from .injection import InjectionResult, scan_for_injection
 from .models import Untrusted
@@ -49,11 +48,11 @@ logger = logging.getLogger(__name__)
 class AgentNode:
     """Represents a single agent run in the topology tree."""
     run_id: str
-    parent_run_id: Optional[str]
+    parent_run_id: str | None
     agent_type: str
     tokens_used: int = 0
     completed: bool = False
-    children: list["AgentNode"] = field(default_factory=list)
+    children: list[AgentNode] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -61,7 +60,7 @@ class InterAgentScanResult:
     """Result of scanning content at an inter-agent boundary."""
     blocked: bool                          # True if injection was found
     sanitized_content: str                 # safe version of the content
-    violation: Optional[InjectionResult]   # details of the injection, or None
+    violation: InjectionResult | None   # details of the injection, or None
     from_run_id: str = ""
     to_run_id: str = ""
 
@@ -99,7 +98,7 @@ class TopologyTracker:
         self,
         run_id: str,
         agent_type: str,
-        parent_run_id: Optional[str] = None,
+        parent_run_id: str | None = None,
     ) -> None:
         """
         Register a new agent run in the topology.
@@ -160,7 +159,7 @@ class TopologyTracker:
     # Orchestrator loop detection
     # ------------------------------------------------------------------
 
-    def check_orchestrator_loop(self, parent_run_id: str) -> Optional[str]:
+    def check_orchestrator_loop(self, parent_run_id: str) -> str | None:
         """
         Return a warning string if the orchestrator is spawning the same
         sub-agent type repeatedly within its last 10 sub-tasks.

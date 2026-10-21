@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 # ── Injection signature patterns ──────────────────────────────────────────────
 # Each entry: (label, compiled_pattern, confidence_score)
@@ -112,7 +111,7 @@ class InjectionResult:
     snippet: str          # ≤80 chars of context around the match
 
 
-def scan_for_injection(text: str) -> Optional[InjectionResult]:
+def scan_for_injection(text: str) -> InjectionResult | None:
     """
     Scan LLM output text for prompt-injection markers.
 
@@ -126,7 +125,7 @@ def scan_for_injection(text: str) -> Optional[InjectionResult]:
         return None
 
     # Find the highest-confidence match across all patterns
-    best: Optional[InjectionResult] = None
+    best: InjectionResult | None = None
 
     for label, pattern, confidence in _PATTERNS:
         match = pattern.search(text)

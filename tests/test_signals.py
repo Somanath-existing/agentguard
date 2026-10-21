@@ -4,8 +4,6 @@ Tests for SignalEngine — loop detection, info-gain collapse, error streaks.
 """
 from __future__ import annotations
 
-import pytest
-
 from agentguard.models import StepEvent
 from agentguard.signals import SignalEngine
 

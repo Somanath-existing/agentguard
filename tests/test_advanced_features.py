@@ -8,10 +8,8 @@ Integration and unit tests for advanced novel features:
   4. Cross-Agent Injection Boundary Scanning (TopologyTracker)
   5. Recovery Memory UCB1 Exploration
 """
-import pytest
 from agentguard import (
     GuardrailSelfTest,
-    InterAgentScanResult,
     SemanticLoopDetector,
     TaintTracker,
     TopologyTracker,

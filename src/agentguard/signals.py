@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import threading
 from collections import deque
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from .models import FailureSignal, StepEvent
 from .semantic_loop import LoopCheckResult, SemanticLoopDetector
@@ -43,7 +43,7 @@ class SignalEngine:
         self,
         run_id: str,
         window: int = 10,
-        baseline: Optional["BaselineStore"] = None,  # Adaptive baseline
+        baseline: BaselineStore | None = None,  # Adaptive baseline
         enable_semantic_loop: bool = True,
     ):
         self.run_id = run_id
@@ -58,7 +58,7 @@ class SignalEngine:
         self._recent_events: deque[StepEvent] = deque(maxlen=6)
 
         # Semantic loop detector v2 — embedding-space trajectory analysis
-        self._semantic_loop: Optional[SemanticLoopDetector] = (
+        self._semantic_loop: SemanticLoopDetector | None = (
             SemanticLoopDetector(
                 similarity_threshold=0.88,
                 window=window,
@@ -78,7 +78,7 @@ class SignalEngine:
             "abort": 3,
         }
 
-    def evaluate(self, event: StepEvent, raw_input: Optional[str] = None) -> Optional[FailureSignal]:
+    def evaluate(self, event: StepEvent, raw_input: str | None = None) -> FailureSignal | None:
         """
         Run all detectors. Return the highest-severity signal, or None.
         Called from interceptor.on_end() after every span.
@@ -102,7 +102,7 @@ class SignalEngine:
     # Detector 1: Loop detection (Exact Hash + Semantic Vector)
     # ------------------------------------------------------------------
 
-    def _check_loop(self, event: StepEvent, raw_input: Optional[str] = None) -> Optional[FailureSignal]:
+    def _check_loop(self, event: StepEvent, raw_input: str | None = None) -> FailureSignal | None:
         # 1. Exact hash check (fast path — catches verbatim repeats)
         if event.input_hash:
             self._input_hashes.append(event.input_hash)
@@ -130,7 +130,7 @@ class SignalEngine:
 
         # 2. Semantic trajectory analysis (catches paraphrased / evasion loops)
         if raw_input and self._semantic_loop:
-            result: Optional[LoopCheckResult] = self._semantic_loop.check(
+            result: LoopCheckResult | None = self._semantic_loop.check(
                 raw_input,
                 tool_name=event.tool_name or event.span_name,
             )
@@ -155,7 +155,7 @@ class SignalEngine:
     # Detector 2: Info-gain collapse
     # ------------------------------------------------------------------
 
-    def _check_info_gain(self, event: StepEvent) -> Optional[FailureSignal]:
+    def _check_info_gain(self, event: StepEvent) -> FailureSignal | None:
         self._output_sizes.append(event.output_size)
         sizes = list(self._output_sizes)
 
@@ -190,7 +190,7 @@ class SignalEngine:
     # Detector 3: Consecutive error streak
     # ------------------------------------------------------------------
 
-    def _check_error_streak(self, event: StepEvent) -> Optional[FailureSignal]:
+    def _check_error_streak(self, event: StepEvent) -> FailureSignal | None:
         if event.status == "error":
             self._error_streak += 1
         else:
@@ -224,7 +224,7 @@ class SignalEngine:
     # Detector 4: Adaptive baseline anomaly
     # ------------------------------------------------------------------
 
-    def _check_baseline_anomaly(self, event: StepEvent) -> Optional[FailureSignal]:
+    def _check_baseline_anomaly(self, event: StepEvent) -> FailureSignal | None:
         """
         Check whether any metric in this step is statistically anomalous
         compared to this agent type's historical baseline.
@@ -257,7 +257,7 @@ class SignalEngine:
             signal_type="drift",
             confidence=round(confidence, 4),
             detail=(
-                f"Behavioral anomaly detected: "
+                "Behavioral anomaly detected: "
                 + ", ".join(
                     f"{m}={v['value']:.0f} ({v['sigma']:.1f}σ above mean {v['mean']:.0f})"
                     for m, v in anomaly.items()
@@ -270,7 +270,7 @@ class SignalEngine:
     # Detector 5: Predictive Failure Forecasting
     # ------------------------------------------------------------------
 
-    def _check_predictive_failure(self, event: StepEvent) -> Optional[FailureSignal]:
+    def _check_predictive_failure(self, event: StepEvent) -> FailureSignal | None:
         """
         Predicts agent failures 1-2 steps ahead using trajectory analysis.
         Fires a 'predictive_failure' signal when a critical risk threshold is exceeded.

@@ -4,8 +4,7 @@ Tests for ToolGuard — allowlist, denylist, argument injection detection, and c
 """
 from __future__ import annotations
 
-import pytest
-from agentguard.toolguard import ToolGuard, ToolAuthResult
+from agentguard.toolguard import ToolGuard
 
 
 def test_permissive_by_default():

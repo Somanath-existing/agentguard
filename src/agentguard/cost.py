@@ -20,7 +20,6 @@ import json
 import logging
 import os
 import threading
-from typing import Optional
 
 from .models import FailureSignal, StepEvent
 
@@ -98,7 +97,7 @@ class CostGuardian:
     def __init__(
         self,
         budget_tokens: int = 100_000,
-        budget_usd: Optional[float] = None,
+        budget_usd: float | None = None,
         model: str = "claude-sonnet-4-6",
         warn_pct: float = 0.75,   # fire budget_pressure signal at 75% projected
         hard_pct: float = 1.00,   # hard stop at 100% budget
@@ -158,7 +157,7 @@ class CostGuardian:
     def should_warn(self) -> bool:
         return self.projected_total() > self.budget_tokens * self._warn_pct
 
-    def should_warn_signal(self, run_id: str, step_number: int) -> Optional[FailureSignal]:
+    def should_warn_signal(self, run_id: str, step_number: int) -> FailureSignal | None:
         """Convenience: return a budget_pressure FailureSignal if warranted, else None."""
         if not self.should_warn():
             return None
@@ -180,7 +179,7 @@ class CostGuardian:
     # Cost estimation
     # ------------------------------------------------------------------
 
-    def cost_usd(self, model: Optional[str] = None) -> float:
+    def cost_usd(self, model: str | None = None) -> float:
         prices = MODEL_COSTS.get(model or self.model, MODEL_COSTS["claude-sonnet-4-6"])
         total_in  = sum(i for _, i, _ in self._history) / 1_000_000
         total_out = sum(o for _, _, o in self._history) / 1_000_000

@@ -27,7 +27,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from .signals import SignalEngine
 from .state import CheckpointStore
@@ -125,7 +124,7 @@ class CausalReplayer:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _replay(self, steps: list) -> Optional[object]:
+    def _replay(self, steps: list) -> object | None:
         """
         Run a fresh SignalEngine over a step sequence.
         Returns the first FailureSignal that would trigger a guard action,

@@ -31,7 +31,6 @@ import math
 import os
 import threading
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +82,7 @@ class RunningStats:
         return {"n": self.n, "mean": self.mean, "M2": self.M2}
 
     @classmethod
-    def from_dict(cls, d: dict) -> "RunningStats":
+    def from_dict(cls, d: dict) -> RunningStats:
         s = cls()
         s.n = int(d.get("n", 0))
         s.mean = float(d.get("mean", 0.0))
@@ -163,7 +162,7 @@ class BaselineStore:
             if self._stats["output_size"].n % 5 == 0:
                 self._save()
 
-    def check_anomaly(self, event) -> Optional[dict]:
+    def check_anomaly(self, event) -> dict | None:
         """
         Check whether any metric in `event` is statistically anomalous
         compared to this agent type's historical baseline.

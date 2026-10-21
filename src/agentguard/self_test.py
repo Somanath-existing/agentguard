@@ -31,7 +31,6 @@ from __future__ import annotations
 import base64
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 from .injection import scan_for_injection
 
@@ -44,8 +43,8 @@ class EvasionResult:
     category: str          # e.g. "leetspeak", "base64", "unicode"
     payload_preview: str   # first 50 chars of payload (safe for logging)
     detected: bool         # True if scanner caught it
-    matched_label: Optional[str]  # which pattern matched, or None
-    confidence: Optional[float]   # scanner confidence, or None
+    matched_label: str | None  # which pattern matched, or None
+    confidence: float | None   # scanner confidence, or None
 
 
 class GuardrailSelfTest:

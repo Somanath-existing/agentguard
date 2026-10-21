@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from opentelemetry.sdk.trace import ReadableSpan, SpanProcessor
 
@@ -63,7 +63,7 @@ class AgentGuardProcessor(SpanProcessor):
         cost_guardian: CostGuardian,
         store: CheckpointStore,
         tool_guard: ToolGuard | None = None,
-        taint_tracker: Optional["TaintTracker"] = None,
+        taint_tracker: TaintTracker | None = None,
     ):
         self._session = session
         self._signals = signal_engine
