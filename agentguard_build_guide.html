@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentGuard — Complete Build Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; line-height: 1.7; }
+  
+  .hero { background: linear-gradient(135deg, #1a1f2e 0%, #0f1117 100%); border-bottom: 1px solid #2d3748; padding: 48px 40px 36px; }
+  .hero h1 { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .hero .subtitle { color: #94a3b8; font-size: 16px; max-width: 640px; }
+  .badge-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px; }
+  .badge-purple { background: #2d1b69; color: #a78bfa; border: 1px solid #4c1d95; }
+  .badge-teal { background: #0d3d30; color: #34d399; border: 1px solid #065f46; }
+  .badge-amber { background: #3d2000; color: #fbbf24; border: 1px solid #78350f; }
+  .badge-blue { background: #0c1a3d; color: #60a5fa; border: 1px solid #1e3a8a; }
+
+  .nav { display: flex; gap: 0; background: #161b27; border-bottom: 1px solid #2d3748; padding: 0 40px; overflow-x: auto; }
+  .nav button { background: none; border: none; color: #64748b; padding: 14px 18px; font-size: 14px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  .nav button:hover { color: #cbd5e1; }
+  .nav button.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+
+  .content { max-width: 900px; margin: 0 auto; padding: 40px; }
+  .phase { display: none; }
+  .phase.active { display: block; }
+
+  h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+  h3 { font-size: 16px; font-weight: 600; color: #cbd5e1; margin: 28px 0 10px; }
+  p { color: #94a3b8; margin-bottom: 14px; font-size: 15px; }
+  .phase-label { font-size: 12px; font-weight: 600; color: #a78bfa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .phase-time { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+
+  .card { background: #161b27; border: 1px solid #2d3748; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+  .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-purple { background: #8b5cf6; }
+  .dot-teal { background: #10b981; }
+  .dot-amber { background: #f59e0b; }
+  .dot-blue { background: #3b82f6; }
+  .dot-red { background: #ef4444; }
+
+  pre { background: #0d1117; border: 1px solid #2d3748; border-radius: 8px; padding: 20px; overflow-x: auto; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13px; line-height: 1.6; margin: 10px 0 18px; color: #e2e8f0; }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nb { color: #f78c6c; }
+  .cls { color: #ffcb6b; }
+
+  .step-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .step-grid { grid-template-columns: 1fr; } }
+  
+  .step-card { background: #1a2035; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; }
+  .step-num { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-bottom: 6px; }
+  .step-title { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+  .warning { background: #1c1207; border: 1px solid #78350f; border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warning-title { font-size: 13px; font-weight: 600; color: #fbbf24; margin-bottom: 4px; }
+  .warning p { color: #92400e; font-size: 13px; margin: 0; }
+
+  .info { background: #0c1a3d; border: 1px solid #1e3a8a; border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .info-title { font-size: 13px; font-weight: 600; color: #60a5fa; margin-bottom: 4px; }
+  .info p { color: #3b82f6; font-size: 13px; margin: 0; }
+
+  .success { background: #0d3324; border: 1px solid #065f46; border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .success-title { font-size: 13px; font-weight: 600; color: #34d399; margin-bottom: 4px; }
+  .success p { color: #059669; font-size: 13px; margin: 0; }
+
+  ul { padding-left: 20px; margin-bottom: 14px; }
+  ul li { color: #94a3b8; font-size: 14px; margin-bottom: 6px; }
+  ul li strong { color: #cbd5e1; }
+
+  .file-tree { background: #0d1117; border: 1px solid #2d3748; border-radius: 8px; padding: 20px; font-family: monospace; font-size: 13px; line-height: 1.8; color: #94a3b8; margin: 12px 0 20px; }
+  .file-tree .dir { color: #60a5fa; }
+  .file-tree .file { color: #94a3b8; }
+  .file-tree .comment { color: #546e7a; }
+
+  .signal-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 14px 0; }
+  @media (max-width: 600px) { .signal-row { grid-template-columns: 1fr; } }
+  .signal-card { background: #1a2035; border: 1px solid #2d3748; border-radius: 8px; padding: 14px; text-align: center; }
+  .signal-icon { font-size: 22px; margin-bottom: 8px; }
+  .signal-name { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .signal-desc { font-size: 12px; color: #64748b; }
+
+  .recover-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  @media (max-width: 600px) { .recover-grid { grid-template-columns: 1fr; } }
+  .recover-card { background: #1a2035; border-radius: 8px; padding: 14px 16px; border-left: 3px solid; }
+  .rc-blue { border-color: #3b82f6; }
+  .rc-amber { border-color: #f59e0b; }
+  .rc-red { border-color: #ef4444; }
+  .rc-purple { border-color: #8b5cf6; }
+  .recover-type { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .rt-blue { color: #3b82f6; }
+  .rt-amber { color: #f59e0b; }
+  .rt-red { color: #ef4444; }
+  .rt-purple { color: #8b5cf6; }
+  .recover-title { font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .recover-when { font-size: 12px; color: #64748b; }
+
+  .timeline { position: relative; padding-left: 28px; margin: 20px 0; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #2d3748; }
+  .tl-item { position: relative; margin-bottom: 24px; }
+  .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #0f1117; }
+  .tl-week { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .tl-title { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+  .tl-desc { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+  .stack-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  .stack-table th { text-align: left; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; border-bottom: 1px solid #2d3748; }
+  .stack-table td { padding: 12px 14px; font-size: 14px; color: #94a3b8; border-bottom: 1px solid #1a2035; vertical-align: top; }
+  .stack-table td:first-child { color: #e2e8f0; font-weight: 500; }
+  .stack-table tr:last-child td { border-bottom: none; }
+
+  .copy-btn { float: right; background: #2d3748; border: none; color: #94a3b8; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-top: -2px; transition: all 0.2s; }
+  .copy-btn:hover { background: #374151; color: #e2e8f0; }
+
+  .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 24px; border-top: 1px solid #2d3748; }
+  .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-ghost { background: none; border: 1px solid #2d3748; color: #64748b; }
+  .btn-ghost:hover { border-color: #4b5563; color: #94a3b8; }
+  .btn-primary { background: #7c3aed; color: #fff; }
+  .btn-primary:hover { background: #6d28d9; }
+
+  .outcome-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0; }
+  @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } }
+  .outcome-card { background: #1a2035; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; text-align: center; }
+  .outcome-num { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .outcome-label { font-size: 12px; color: #64748b; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🛡️ AgentGuard — Build Guide</h1>
+  <p class="subtitle">A complete, step-by-step implementation plan for building real-time agent failure prediction, semantic crash recovery, and waste prevention — the layer nobody has shipped yet.</p>
+  <div class="badge-row">
+    <span class="badge badge-purple">Python 3.11+</span>
+    <span class="badge badge-teal">OpenTelemetry</span>
+    <span class="badge badge-amber">SQLite / Redis</span>
+    <span class="badge badge-blue">Framework-agnostic</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showPhase(0)">0 · Overview</button>
+  <button onclick="showPhase(1)">1 · Project Setup</button>
+  <button onclick="showPhase(2)">2 · Interceptor</button>
+  <button onclick="showPhase(3)">3 · Signal Engine</button>
+  <button onclick="showPhase(4)">4 · Recovery Router</button>
+  <button onclick="showPhase(5)">5 · Cost Guardian</button>
+  <button onclick="showPhase(6)">6 · Dashboard</button>
+  <button onclick="showPhase(7)">7 · Ship It</button>
+</div>
+
+<!-- ─── PHASE 0: OVERVIEW ─── -->
+<div class="content">
+<div class="phase active" id="phase-0">
+  <div class="phase-label">Phase 0</div>
+  <h2>What you are building</h2>
+  <div class="phase-time">Read time: 5 min · No code yet</div>
+
+  <p>AgentGuard is a thin Python SDK — roughly 600–900 lines of real code — that wraps any LLM agent framework and does three things no existing tool does:</p>
+
+  <div class="step-grid">
+    <div class="step-card">
+      <div class="step-num">LAYER 1</div>
+      <div class="step-title">🔴 Live failure prediction</div>
+      <div class="step-desc">Scores each tool call between steps. Fires an alert before failure locks in — not after. Research shows 58% of wasted tokens happen after the first detectable warning signal.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">LAYER 2</div>
+      <div class="step-title">🔁 Semantic crash recovery</div>
+      <div class="step-desc">Classifies WHY the agent crashed (loop, tool error, hallucination, token overflow) and routes to the right fix — not just "resume from last checkpoint."</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">LAYER 3</div>
+      <div class="step-title">💰 Waste prediction</div>
+      <div class="step-desc">Estimates token burn for remaining steps before they run. Enforces a budget mid-run. Can downgrade the model automatically when threshold is hit.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">THE GAP</div>
+      <div class="step-title">🆕 Why this is new</div>
+      <div class="step-desc">LangSmith/Arize grade after failure. Temporal/LangGraph do raw checkpoints. Langfuse tracks past spend. Nobody unifies live interception + smart recovery + waste prevention in one SDK.</div>
+    </div>
+  </div>
+
+  <h3>What you will have at the end</h3>
+  <div class="outcome-grid">
+    <div class="outcome-card">
+      <div class="outcome-num" style="color:#a78bfa">~900</div>
+      <div class="outcome-label">lines of Python</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-num" style="color:#34d399">2 lines</div>
+      <div class="outcome-label">to add to any agent</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-num" style="color:#fbbf24">8–10 weeks</div>
+      <div class="outcome-label">to working prototype</div>
+    </div>
+  </div>
+
+  <h3>How a user uses your SDK (the end goal)</h3>
+  <pre><span class="cm"># Before AgentGuard — normal agent code, unchanged</span>
+<span class="kw">from</span> agentguard <span class="kw">import</span> <span class="cls">Guard</span>
+
+guard = <span class="cls">Guard</span>(
+    budget_tokens=<span class="nb">50000</span>,           <span class="cm"># max tokens for this run</span>
+    on_failure=<span class="st">"replan"</span>,           <span class="cm"># what to do on failure: retry | replan | escalate | abort</span>
+    alert_webhook=<span class="st">"https://..."</span>    <span class="cm"># optional: post alerts here</span>
+)
+
+<span class="cm"># Wrap your existing agent — 2 lines, zero framework changes</span>
+<span class="kw">with</span> guard.watch(run_id=<span class="st">"task-123"</span>) <span class="kw">as</span> session:
+    result = my_agent.run(task)    <span class="cm"># your existing agent, unchanged</span>
+
+<span class="cm"># After the run — see what happened</span>
+<span class="fn">print</span>(session.report())</pre>
+
+  <div class="bottom-nav">
+    <span></span>
+    <button class="btn btn-primary" onclick="showPhase(1)">Start Building → Phase 1</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 1: PROJECT SETUP ─── -->
+<div class="phase" id="phase-1">
+  <div class="phase-label">Phase 1 · Weeks 1–2</div>
+  <h2>Project setup & structure</h2>
+  <div class="phase-time">~3 hours · Lay the foundation</div>
+
+  <h3>Folder structure</h3>
+  <div class="file-tree">
+<span class="dir">agentguard/</span>
+├── <span class="dir">agentguard/</span>            <span class="comment"># main package</span>
+│   ├── <span class="file">__init__.py</span>        <span class="comment"># public API: Guard class</span>
+│   ├── <span class="file">interceptor.py</span>     <span class="comment"># OTel SpanProcessor — the hook layer</span>
+│   ├── <span class="file">signals.py</span>         <span class="comment"># loop detector, drift, info-gain scorer</span>
+│   ├── <span class="file">classifier.py</span>      <span class="comment"># failure type classifier</span>
+│   ├── <span class="file">recovery.py</span>        <span class="comment"># crash router: retry | replan | escalate | abort</span>
+│   ├── <span class="file">state.py</span>           <span class="comment"># checkpoint store (SQLite dev / Redis prod)</span>
+│   ├── <span class="file">cost.py</span>            <span class="comment"># token estimator + budget enforcer</span>
+│   ├── <span class="file">session.py</span>         <span class="comment"># run context, report generator</span>
+│   └── <span class="file">models.py</span>          <span class="comment"># Pydantic data models for spans/events</span>
+├── <span class="dir">tests/</span>
+│   ├── <span class="file">test_signals.py</span>
+│   ├── <span class="file">test_recovery.py</span>
+│   └── <span class="file">test_cost.py</span>
+├── <span class="dir">examples/</span>
+│   ├── <span class="file">langchain_example.py</span>
+│   └── <span class="file">openai_agents_example.py</span>
+├── <span class="file">pyproject.toml</span>
+└── <span class="file">README.md</span>
+  </div>
+
+  <h3>Install your dependencies</h3>
+  <pre>pip install \
+  opentelemetry-api \
+  opentelemetry-sdk \
+  opentelemetry-instrumentation-openai \
+  opentelemetry-instrumentation-anthropic \
+  opentelemetry-instrumentation-langchain \
+  pydantic>=2.0 \
+  redis \
+  tiktoken \
+  httpx \
+  rich          <span class="cm"># for pretty terminal output in your dashboard</span></pre>
+
+  <h3>pyproject.toml (minimal)</h3>
+  <pre>[build-system]
+requires = [<span class="st">"setuptools"</span>, <span class="st">"wheel"</span>]
+
+[project]
+name = <span class="st">"agentguard"</span>
+version = <span class="st">"0.1.0"</span>
+requires-python = <span class="st">">=3.11"</span>
+dependencies = [
+    <span class="st">"opentelemetry-api>=1.40"</span>,
+    <span class="st">"opentelemetry-sdk>=1.40"</span>,
+    <span class="st">"pydantic>=2.0"</span>,
+    <span class="st">"tiktoken"</span>,
+    <span class="st">"httpx"</span>,
+]
+
+[project.optional-dependencies]
+redis = [<span class="st">"redis>=5"</span>]
+langchain = [<span class="st">"opentelemetry-instrumentation-langchain"</span>]
+openai = [<span class="st">"opentelemetry-instrumentation-openai"</span>]</pre>
+
+  <h3>Core data models (models.py)</h3>
+  <p>Define what a "step event" looks like. Every intercepted tool call becomes one of these.</p>
+  <pre><span class="kw">from</span> pydantic <span class="kw">import</span> <span class="cls">BaseModel</span>
+<span class="kw">from</span> typing <span class="kw">import</span> Optional, Literal
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">import</span> hashlib
+
+<span class="kw">class</span> <span class="cls">StepEvent</span>(<span class="cls">BaseModel</span>):
+    run_id: str
+    step_number: int
+    span_id: str
+    span_name: str                    <span class="cm"># e.g. "tool.web_search"</span>
+    tool_name: Optional[str] = None
+    input_hash: Optional[str] = None  <span class="cm"># hash of inputs — used for loop detection</span>
+    output_size: int = <span class="nb">0</span>             <span class="cm"># chars in output</span>
+    tokens_in: int = <span class="nb">0</span>
+    tokens_out: int = <span class="nb">0</span>
+    latency_ms: float = <span class="nb">0.0</span>
+    status: Literal[<span class="st">"ok"</span>, <span class="st">"error"</span>, <span class="st">"timeout"</span>] = <span class="st">"ok"</span>
+    error_type: Optional[str] = None
+    timestamp: datetime = datetime.utcnow()
+
+    <span class="kw">def</span> <span class="fn">make_input_hash</span>(self, raw_input: str) -> str:
+        <span class="kw">return</span> hashlib.<span class="fn">sha256</span>(raw_input.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()[:<span class="nb">16</span>]
+
+<span class="kw">class</span> <span class="cls">FailureSignal</span>(<span class="cls">BaseModel</span>):
+    run_id: str
+    step_number: int
+    signal_type: Literal[<span class="st">"loop"</span>, <span class="st">"drift"</span>, <span class="st">"budget_pressure"</span>, <span class="st">"tool_error"</span>, <span class="st">"info_collapse"</span>]
+    confidence: float          <span class="cm"># 0.0–1.0</span>
+    detail: str                <span class="cm"># human-readable explanation</span>
+    recommended_action: Literal[<span class="st">"continue"</span>, <span class="st">"warn"</span>, <span class="st">"redirect"</span>, <span class="st">"abort"</span>]</pre>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(0)">← Overview</button>
+    <button class="btn btn-primary" onclick="showPhase(2)">Phase 2: Interceptor →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 2: INTERCEPTOR ─── -->
+<div class="phase" id="phase-2">
+  <div class="phase-label">Phase 2 · Weeks 2–3</div>
+  <h2>The Interceptor — hooking into any agent</h2>
+  <div class="phase-time">This is the most important file. Everything else reads from what this captures.</div>
+
+  <p>The interceptor is a custom OpenTelemetry <strong>SpanProcessor</strong>. Every time a tool call starts or ends, OTel calls your hook. This is how you get between steps without touching the agent code.</p>
+
+  <div class="card">
+    <div class="card-title"><span class="dot dot-purple"></span>Key insight</div>
+    <p style="margin:0;font-size:14px;color:#64748b">You don't patch LangChain or OpenAI SDK. You register a SpanProcessor once. Because LangChain, OpenAI Agents SDK, and LlamaIndex all emit OTel spans, your interceptor works across all of them with zero framework-specific code.</p>
+  </div>
+
+  <h3>interceptor.py — the core hook</h3>
+  <pre><span class="kw">from</span> opentelemetry.sdk.trace <span class="kw">import</span> <span class="cls">SpanProcessor</span>
+<span class="kw">from</span> opentelemetry.sdk.trace <span class="kw">import</span> <span class="cls">ReadableSpan</span>
+<span class="kw">from</span> opentelemetry <span class="kw">import</span> trace
+<span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">StepEvent</span>
+<span class="kw">from</span> .signals <span class="kw">import</span> <span class="cls">SignalEngine</span>
+<span class="kw">from</span> .state <span class="kw">import</span> <span class="cls">CheckpointStore</span>
+<span class="kw">from</span> .cost <span class="kw">import</span> <span class="cls">CostGuardian</span>
+<span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="cls">AgentGuardProcessor</span>(<span class="cls">SpanProcessor</span>):
+    <span class="st">"""
+    Registers with the OTel TracerProvider.
+    on_end() fires after EVERY span in the agent — tool calls,
+    LLM calls, retrieval steps. We filter to the ones we care about.
+    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, session, signal_engine, cost_guardian, store):
+        self.session = session
+        self.signals = signal_engine
+        self.cost = cost_guardian
+        self.store = store
+        self._step_counts = {}   <span class="cm"># run_id → step count</span>
+
+    <span class="kw">def</span> <span class="fn">on_start</span>(self, span, parent_context=<span class="nb">None</span>):
+        <span class="cm"># Attach our run_id to every span so we can correlate later</span>
+        run_id = self.session.run_id
+        <span class="kw">if</span> run_id:
+            span.<span class="fn">set_attribute</span>(<span class="st">"agentguard.run_id"</span>, run_id)
+
+    <span class="kw">def</span> <span class="fn">on_end</span>(self, span: <span class="cls">ReadableSpan</span>):
+        <span class="cm"># Filter: only process tool calls and LLM calls</span>
+        name = span.name
+        <span class="kw">if not</span> <span class="fn">any</span>(k <span class="kw">in</span> name <span class="kw">for</span> k <span class="kw">in</span> [<span class="st">"tool"</span>, <span class="st">"llm"</span>, <span class="st">"chat"</span>, <span class="st">"completion"</span>, <span class="st">"retrieve"</span>]):
+            <span class="kw">return</span>
+
+        run_id = span.attributes.<span class="fn">get</span>(<span class="st">"agentguard.run_id"</span>, <span class="st">"unknown"</span>)
+        step = self._step_counts.<span class="fn">get</span>(run_id, <span class="nb">0</span>) + <span class="nb">1</span>
+        self._step_counts[run_id] = step
+
+        <span class="cm"># Build a structured StepEvent from the raw OTel span</span>
+        event = <span class="cls">StepEvent</span>(
+            run_id=run_id,
+            step_number=step,
+            span_id=<span class="fn">str</span>(span.context.span_id),
+            span_name=name,
+            tool_name=span.attributes.<span class="fn">get</span>(<span class="st">"gen_ai.tool.name"</span>),
+            tokens_in=span.attributes.<span class="fn">get</span>(<span class="st">"gen_ai.usage.input_tokens"</span>, <span class="nb">0</span>),
+            tokens_out=span.attributes.<span class="fn">get</span>(<span class="st">"gen_ai.usage.output_tokens"</span>, <span class="nb">0</span>),
+            output_size=<span class="fn">len</span>(<span class="fn">str</span>(span.attributes.<span class="fn">get</span>(<span class="st">"gen_ai.completion"</span>, <span class="st">""</span>))),
+            latency_ms=(span.end_time - span.start_time) / <span class="nb">1e6</span>,
+            status=<span class="st">"error"</span> <span class="kw">if</span> span.status.is_error <span class="kw">else</span> <span class="st">"ok"</span>,
+            error_type=<span class="fn">str</span>(span.status.description) <span class="kw">if</span> span.status.is_error <span class="kw">else</span> <span class="nb">None</span>
+        )
+
+        <span class="cm"># Hash the input for loop detection</span>
+        raw_input = <span class="fn">str</span>(span.attributes.<span class="fn">get</span>(<span class="st">"gen_ai.prompt"</span>, <span class="st">""</span>))
+        event.input_hash = event.<span class="fn">make_input_hash</span>(raw_input)
+
+        <span class="cm"># Checkpoint state after every step</span>
+        self.store.<span class="fn">save_step</span>(event)
+
+        <span class="cm"># Run signal engine — fire alert if something looks wrong</span>
+        signal = self.signals.<span class="fn">evaluate</span>(event)
+        <span class="kw">if</span> signal <span class="kw">and</span> signal.recommended_action <span class="kw">in</span> [<span class="st">"redirect"</span>, <span class="st">"abort"</span>]:
+            self.session.<span class="fn">on_signal</span>(signal)
+
+        <span class="cm"># Check cost budget</span>
+        self.cost.<span class="fn">record</span>(event)
+        <span class="kw">if</span> self.cost.<span class="fn">is_over_budget</span>():
+            self.session.<span class="fn">on_budget_exceeded</span>(self.cost.<span class="fn">remaining</span>())
+
+    <span class="kw">def</span> <span class="fn">shutdown</span>(self): <span class="kw">pass</span>
+    <span class="kw">def</span> <span class="fn">force_flush</span>(self, timeout_millis=<span class="nb">30000</span>): <span class="kw">return</span> <span class="nb">True</span></pre>
+
+  <h3>How to register it (in __init__.py)</h3>
+  <pre><span class="kw">from</span> opentelemetry <span class="kw">import</span> trace
+<span class="kw">from</span> opentelemetry.sdk.trace <span class="kw">import</span> <span class="cls">TracerProvider</span>
+<span class="kw">from</span> .interceptor <span class="kw">import</span> <span class="cls">AgentGuardProcessor</span>
+<span class="cm"># ... other imports</span>
+
+<span class="kw">class</span> <span class="cls">Guard</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, budget_tokens=<span class="nb">100000</span>, on_failure=<span class="st">"replan"</span>, alert_webhook=<span class="nb">None</span>):
+        self.budget_tokens = budget_tokens
+        self.on_failure = on_failure
+        self.alert_webhook = alert_webhook
+
+    <span class="kw">def</span> <span class="fn">watch</span>(self, run_id: str):
+        <span class="st">"""Context manager. Wraps any agent run."""</span>
+        session = <span class="cls">GuardSession</span>(run_id, self)
+        store = <span class="cls">CheckpointStore</span>(run_id)
+        cost = <span class="cls">CostGuardian</span>(budget_tokens=self.budget_tokens)
+        signals = <span class="cls">SignalEngine</span>(run_id)
+        processor = <span class="cls">AgentGuardProcessor</span>(session, signals, cost, store)
+
+        <span class="cm"># Register processor with OTel — intercepts ALL spans from now on</span>
+        provider = <span class="cls">TracerProvider</span>()
+        provider.<span class="fn">add_span_processor</span>(processor)
+        trace.<span class="fn">set_tracer_provider</span>(provider)
+
+        <span class="cm"># Auto-instrument whichever frameworks are installed</span>
+        <span class="fn">_auto_instrument</span>()
+
+        <span class="kw">return</span> session
+
+<span class="kw">def</span> <span class="fn">_auto_instrument</span>():
+    <span class="kw">try</span>:
+        <span class="kw">from</span> opentelemetry.instrumentation.langchain <span class="kw">import</span> <span class="cls">LangchainInstrumentor</span>
+        <span class="cls">LangchainInstrumentor</span>().<span class="fn">instrument</span>()
+    <span class="kw">except</span> <span class="cls">ImportError</span>: <span class="kw">pass</span>
+    <span class="kw">try</span>:
+        <span class="kw">from</span> opentelemetry.instrumentation.openai <span class="kw">import</span> <span class="cls">OpenAIInstrumentor</span>
+        <span class="cls">OpenAIInstrumentor</span>().<span class="fn">instrument</span>()
+    <span class="kw">except</span> <span class="cls">ImportError</span>: <span class="kw">pass</span>
+    <span class="kw">try</span>:
+        <span class="kw">from</span> opentelemetry.instrumentation.anthropic <span class="kw">import</span> <span class="cls">AnthropicInstrumentor</span>
+        <span class="cls">AnthropicInstrumentor</span>().<span class="fn">instrument</span>()
+    <span class="kw">except</span> <span class="cls">ImportError</span>: <span class="kw">pass</span></pre>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(1)">← Setup</button>
+    <button class="btn btn-primary" onclick="showPhase(3)">Phase 3: Signal Engine →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 3: SIGNAL ENGINE ─── -->
+<div class="phase" id="phase-3">
+  <div class="phase-label">Phase 3 · Weeks 3–5</div>
+  <h2>Signal Engine — detecting failure mid-run</h2>
+  <div class="phase-time">This is what makes AgentGuard original. Pure math, no LLM call needed.</div>
+
+  <p>Three cheap signals that run after every step. None of them require an LLM — they're deterministic math on the step history. Fast enough to run synchronously between tool calls.</p>
+
+  <div class="signal-row">
+    <div class="signal-card">
+      <div class="signal-icon">🔄</div>
+      <div class="signal-name">Loop detector</div>
+      <div class="signal-desc">Same input hash called twice = agent is stuck. Fires at 2 repeats.</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">📉</div>
+      <div class="signal-name">Info-gain collapse</div>
+      <div class="signal-desc">Output shrinking 3 steps in a row = agent running out of useful things to say.</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">💸</div>
+      <div class="signal-name">Budget pressure</div>
+      <div class="signal-desc">Token burn rate vs remaining budget. Projects remaining steps will exceed budget.</div>
+    </div>
+  </div>
+
+  <h3>signals.py — full implementation</h3>
+  <pre><span class="kw">from</span> collections <span class="kw">import</span> defaultdict, deque
+<span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">StepEvent</span>, <span class="cls">FailureSignal</span>
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="cls">SignalEngine</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, run_id: str, window: int = <span class="nb">5</span>):
+        self.run_id = run_id
+        self.window = window
+        self.input_hashes: <span class="fn">list</span>[str] = []         <span class="cm"># for loop detection</span>
+        self.output_sizes: deque = <span class="fn">deque</span>(maxlen=window) <span class="cm"># for info-gain</span>
+        self.error_streak: int = <span class="nb">0</span>
+
+    <span class="kw">def</span> <span class="fn">evaluate</span>(self, event: <span class="cls">StepEvent</span>) -> Optional[<span class="cls">FailureSignal</span>]:
+        <span class="cm"># Run all three detectors. Return the highest-severity signal found.</span>
+        signals = [
+            self.<span class="fn">_check_loop</span>(event),
+            self.<span class="fn">_check_info_gain</span>(event),
+            self.<span class="fn">_check_error_streak</span>(event),
+        ]
+        <span class="cm"># Filter None, return most severe</span>
+        real = [s <span class="kw">for</span> s <span class="kw">in</span> signals <span class="kw">if</span> s <span class="kw">is not</span> <span class="nb">None</span>]
+        <span class="kw">if not</span> real:
+            <span class="kw">return</span> <span class="nb">None</span>
+        severity_order = {<span class="st">"continue"</span>:<span class="nb">0</span>, <span class="st">"warn"</span>:<span class="nb">1</span>, <span class="st">"redirect"</span>:<span class="nb">2</span>, <span class="st">"abort"</span>:<span class="nb">3</span>}
+        <span class="kw">return</span> <span class="fn">max</span>(real, key=<span class="kw">lambda</span> s: severity_order[s.recommended_action])
+
+    <span class="kw">def</span> <span class="fn">_check_loop</span>(self, event: <span class="cls">StepEvent</span>) -> Optional[<span class="cls">FailureSignal</span>]:
+        <span class="kw">if</span> <span class="kw">not</span> event.input_hash:
+            <span class="kw">return</span> <span class="nb">None</span>
+        self.input_hashes.<span class="fn">append</span>(event.input_hash)
+
+        <span class="cm"># Count how many times this exact input appeared in last 10 steps</span>
+        recent = self.input_hashes[-<span class="nb">10</span>:]
+        count = recent.<span class="fn">count</span>(event.input_hash)
+
+        <span class="kw">if</span> count >= <span class="nb">3</span>:
+            <span class="kw">return</span> <span class="cls">FailureSignal</span>(
+                run_id=self.run_id, step_number=event.step_number,
+                signal_type=<span class="st">"loop"</span>, confidence=<span class="nb">0.95</span>,
+                detail=<span class="st">f"Same input called {count}x in last 10 steps: {event.tool_name}"</span>,
+                recommended_action=<span class="st">"abort"</span>
+            )
+        <span class="kw">if</span> count == <span class="nb">2</span>:
+            <span class="kw">return</span> <span class="cls">FailureSignal</span>(
+                run_id=self.run_id, step_number=event.step_number,
+                signal_type=<span class="st">"loop"</span>, confidence=<span class="nb">0.65</span>,
+                detail=<span class="st">f"Possible loop: same input seen twice for {event.tool_name}"</span>,
+                recommended_action=<span class="st">"warn"</span>
+            )
+        <span class="kw">return</span> <span class="nb">None</span>
+
+    <span class="kw">def</span> <span class="fn">_check_info_gain</span>(self, event: <span class="cls">StepEvent</span>) -> Optional[<span class="cls">FailureSignal</span>]:
+        <span class="cm"># Track output size over recent steps</span>
+        self.output_sizes.<span class="fn">append</span>(event.output_size)
+        <span class="kw">if</span> <span class="fn">len</span>(self.output_sizes) < <span class="nb">4</span>:
+            <span class="kw">return</span> <span class="nb">None</span>
+
+        sizes = <span class="fn">list</span>(self.output_sizes)[-<span class="nb">4</span>:]
+        <span class="cm"># Check if output has been monotonically shrinking</span>
+        shrinking = <span class="fn">all</span>(sizes[i] > sizes[i+<span class="nb">1</span>] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">3</span>))
+        <span class="kw">if</span> shrinking <span class="kw">and</span> sizes[-<span class="nb">1</span>] < sizes[<span class="nb">0</span>] * <span class="nb">0.3</span>:  <span class="cm"># 70% output collapse</span>
+            <span class="kw">return</span> <span class="cls">FailureSignal</span>(
+                run_id=self.run_id, step_number=event.step_number,
+                signal_type=<span class="st">"info_collapse"</span>, confidence=<span class="nb">0.78</span>,
+                detail=<span class="st">f"Output shrunk 70% over 4 steps — likely hitting diminishing returns"</span>,
+                recommended_action=<span class="st">"redirect"</span>
+            )
+        <span class="kw">return</span> <span class="nb">None</span>
+
+    <span class="kw">def</span> <span class="fn">_check_error_streak</span>(self, event: <span class="cls">StepEvent</span>) -> Optional[<span class="cls">FailureSignal</span>]:
+        <span class="kw">if</span> event.status == <span class="st">"error"</span>:
+            self.error_streak += <span class="nb">1</span>
+        <span class="kw">else</span>:
+            self.error_streak = <span class="nb">0</span>
+
+        <span class="kw">if</span> self.error_streak >= <span class="nb">3</span>:
+            <span class="kw">return</span> <span class="cls">FailureSignal</span>(
+                run_id=self.run_id, step_number=event.step_number,
+                signal_type=<span class="st">"tool_error"</span>, confidence=<span class="nb">0.90</span>,
+                detail=<span class="st">f"3 consecutive errors: {event.error_type}"</span>,
+                recommended_action=<span class="st">"abort"</span>
+            )
+        <span class="kw">if</span> self.error_streak == <span class="nb">2</span>:
+            <span class="kw">return</span> <span class="cls">FailureSignal</span>(
+                run_id=self.run_id, step_number=event.step_number,
+                signal_type=<span class="st">"tool_error"</span>, confidence=<span class="nb">0.60</span>,
+                detail=<span class="st">f"2 consecutive tool errors — escalation likely needed"</span>,
+                recommended_action=<span class="st">"warn"</span>
+            )
+        <span class="kw">return</span> <span class="nb">None</span></pre>
+
+  <div class="info">
+    <div class="info-title">💡 Why no LLM call here?</div>
+    <p>These three signals are deterministic — they run in microseconds between tool calls and have zero additional cost. Save LLM evaluation for the classifier (Phase 4) which only fires on crash or high-confidence abort signal.</p>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(2)">← Interceptor</button>
+    <button class="btn btn-primary" onclick="showPhase(4)">Phase 4: Recovery →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 4: RECOVERY ROUTER ─── -->
+<div class="phase" id="phase-4">
+  <div class="phase-label">Phase 4 · Weeks 5–7</div>
+  <h2>State store + Semantic Recovery Router</h2>
+  <div class="phase-time">This is the second original piece — classifying WHY it failed and picking the right fix</div>
+
+  <p>Most frameworks just checkpoint-and-resume. AgentGuard classifies the failure type first, then routes to the appropriate recovery strategy.</p>
+
+  <div class="recover-grid">
+    <div class="recover-card rc-blue">
+      <div class="recover-type rt-blue">Tool error</div>
+      <div class="recover-title">Retry with backoff</div>
+      <div class="recover-when">When: API timeout, rate limit, transient error. Resume from last good step.</div>
+    </div>
+    <div class="recover-card rc-amber">
+      <div class="recover-type rt-amber">Loop detected</div>
+      <div class="recover-title">Replan from checkpoint</div>
+      <div class="recover-when">When: agent stuck in loop. Restore to last good checkpoint + inject replanning prompt.</div>
+    </div>
+    <div class="recover-card rc-red">
+      <div class="recover-type rt-red">Info collapse / hallucination</div>
+      <div class="recover-title">Escalate to human</div>
+      <div class="recover-when">When: agent running out of real information. Push to human queue with context.</div>
+    </div>
+    <div class="recover-card rc-purple">
+      <div class="recover-type rt-purple">Token budget exceeded</div>
+      <div class="recover-title">Downgrade model</div>
+      <div class="recover-when">When: projected to exceed budget. Swap to cheaper model for remaining steps.</div>
+    </div>
+  </div>
+
+  <h3>state.py — checkpoint store (SQLite for dev, Redis for prod)</h3>
+  <pre><span class="kw">import</span> sqlite3, json
+<span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">StepEvent</span>
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="cls">CheckpointStore</span>:
+    <span class="st">"""
+    Dev: SQLite file per run_id (zero infra required).
+    Prod: swap backend to Redis for &lt;1ms reads. Same API.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, run_id: str, backend: str = <span class="st">"sqlite"</span>):
+        self.run_id = run_id
+        self.backend = backend
+        <span class="kw">if</span> backend == <span class="st">"sqlite"</span>:
+            self.conn = sqlite3.<span class="fn">connect</span>(<span class="st">f"agentguard_{run_id}.db"</span>)
+            self.<span class="fn">_init_sqlite</span>()
+
+    <span class="kw">def</span> <span class="fn">_init_sqlite</span>(self):
+        self.conn.<span class="fn">execute</span>(<span class="st">"""
+            CREATE TABLE IF NOT EXISTS steps (
+                step_number INTEGER PRIMARY KEY,
+                run_id TEXT,
+                data TEXT,          -- JSON-serialized StepEvent
+                trust_score REAL DEFAULT 1.0,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """</span>)
+        self.conn.<span class="fn">commit</span>()
+
+    <span class="kw">def</span> <span class="fn">save_step</span>(self, event: <span class="cls">StepEvent</span>, trust_score: float = <span class="nb">1.0</span>):
+        <span class="st">"""Save every step. Called from interceptor after each span ends."""</span>
+        self.conn.<span class="fn">execute</span>(
+            <span class="st">"INSERT OR REPLACE INTO steps (step_number, run_id, data, trust_score) VALUES (?,?,?,?)"</span>,
+            (event.step_number, self.run_id, event.<span class="fn">model_dump_json</span>(), trust_score)
+        )
+        self.conn.<span class="fn">commit</span>()
+
+    <span class="kw">def</span> <span class="fn">last_trusted_step</span>(self, min_trust: float = <span class="nb">0.7</span>) -> Optional[<span class="cls">StepEvent</span>]:
+        <span class="st">"""Find last step with acceptable trust — recovery resumes from here."""</span>
+        row = self.conn.<span class="fn">execute</span>(
+            <span class="st">"SELECT data FROM steps WHERE run_id=? AND trust_score>=? ORDER BY step_number DESC LIMIT 1"</span>,
+            (self.run_id, min_trust)
+        ).<span class="fn">fetchone</span>()
+        <span class="kw">if</span> row:
+            <span class="kw">return</span> <span class="cls">StepEvent</span>.<span class="fn">model_validate_json</span>(row[<span class="nb">0</span>])
+        <span class="kw">return</span> <span class="nb">None</span>
+
+    <span class="kw">def</span> <span class="fn">all_steps</span>(self) -> <span class="fn">list</span>[<span class="cls">StepEvent</span>]:
+        rows = self.conn.<span class="fn">execute</span>(
+            <span class="st">"SELECT data FROM steps WHERE run_id=? ORDER BY step_number"</span>,
+            (self.run_id,)
+        ).<span class="fn">fetchall</span>()
+        <span class="kw">return</span> [<span class="cls">StepEvent</span>.<span class="fn">model_validate_json</span>(r[<span class="nb">0</span>]) <span class="kw">for</span> r <span class="kw">in</span> rows]</pre>
+
+  <h3>recovery.py — the semantic router</h3>
+  <pre><span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">FailureSignal</span>
+<span class="kw">from</span> .state <span class="kw">import</span> <span class="cls">CheckpointStore</span>
+<span class="kw">import</span> httpx, asyncio
+
+<span class="kw">class</span> <span class="cls">RecoveryRouter</span>:
+    <span class="st">"""
+    The novel piece: classify failure type, then pick the right fix.
+    Not just 'restart from checkpoint' — route to the appropriate strategy.
+    """</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, store: <span class="cls">CheckpointStore</span>, config: dict):
+        self.store = store
+        self.config = config
+        self._escalation_queue = []
+
+    <span class="kw">def</span> <span class="fn">handle</span>(self, signal: <span class="cls">FailureSignal</span>) -> dict:
+        <span class="st">"""
+        Takes a FailureSignal, returns a recovery action dict.
+        The caller (session.py) executes the action.
+        """</span>
+        last_good = self.store.<span class="fn">last_trusted_step</span>()
+
+        <span class="kw">if</span> signal.signal_type == <span class="st">"tool_error"</span>:
+            <span class="kw">return</span> {
+                <span class="st">"action"</span>: <span class="st">"retry"</span>,
+                <span class="st">"resume_from_step"</span>: last_good.step_number <span class="kw">if</span> last_good <span class="kw">else</span> <span class="nb">0</span>,
+                <span class="st">"backoff_ms"</span>: <span class="nb">2000</span>,
+                <span class="st">"reason"</span>: signal.detail
+            }
+
+        <span class="kw">if</span> signal.signal_type == <span class="st">"loop"</span>:
+            <span class="kw">return</span> {
+                <span class="st">"action"</span>: <span class="st">"replan"</span>,
+                <span class="st">"resume_from_step"</span>: last_good.step_number <span class="kw">if</span> last_good <span class="kw">else</span> <span class="nb">0</span>,
+                <span class="st">"inject_prompt"</span>: <span class="st">"You appear to be repeating the same action. Take a different approach to the goal."</span>,
+                <span class="st">"reason"</span>: signal.detail
+            }
+
+        <span class="kw">if</span> signal.signal_type <span class="kw">in</span> [<span class="st">"info_collapse"</span>, <span class="st">"drift"</span>]:
+            self.<span class="fn">_push_to_human_queue</span>(signal, last_good)
+            <span class="kw">return</span> {
+                <span class="st">"action"</span>: <span class="st">"escalate"</span>,
+                <span class="st">"checkpoint_step"</span>: last_good.step_number <span class="kw">if</span> last_good <span class="kw">else</span> <span class="nb">0</span>,
+                <span class="st">"reason"</span>: signal.detail
+            }
+
+        <span class="kw">if</span> signal.signal_type == <span class="st">"budget_pressure"</span>:
+            <span class="kw">return</span> {
+                <span class="st">"action"</span>: <span class="st">"downgrade_model"</span>,
+                <span class="st">"new_model"</span>: self.config.<span class="fn">get</span>(<span class="st">"cheap_model"</span>, <span class="st">"claude-haiku-4-5-20251001"</span>),
+                <span class="st">"reason"</span>: signal.detail
+            }
+
+        <span class="kw">return</span> {<span class="st">"action"</span>: <span class="st">"abort"</span>, <span class="st">"reason"</span>: signal.detail}
+
+    <span class="kw">def</span> <span class="fn">_push_to_human_queue</span>(self, signal, last_good):
+        <span class="cm"># In v1: just log it. In v2: POST to webhook or Slack</span>
+        self._escalation_queue.<span class="fn">append</span>({
+            <span class="st">"signal"</span>: signal.<span class="fn">model_dump</span>(),
+            <span class="st">"last_good_step"</span>: last_good.step_number <span class="kw">if</span> last_good <span class="kw">else</span> <span class="nb">None</span>,
+        })</pre>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(3)">← Signal Engine</button>
+    <button class="btn btn-primary" onclick="showPhase(5)">Phase 5: Cost Guardian →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 5: COST GUARDIAN ─── -->
+<div class="phase" id="phase-5">
+  <div class="phase-label">Phase 5 · Week 7</div>
+  <h2>Cost Guardian — predict waste before it happens</h2>
+  <div class="phase-time">~1 day of code · High impact for users</div>
+
+  <p>Existing tools show you what you already spent. The Cost Guardian projects what the <em>remaining steps</em> will cost before they run — and enforces a budget mid-run.</p>
+
+  <h3>cost.py</h3>
+  <pre><span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">StepEvent</span>
+<span class="kw">import</span> tiktoken
+
+<span class="cm"># Real 2026 pricing per 1M tokens (update from API pricing page)</span>
+MODEL_COSTS = {
+    <span class="st">"claude-opus-4-6"</span>:   {<span class="st">"in"</span>: <span class="nb">15.00</span>, <span class="st">"out"</span>: <span class="nb">75.00</span>},
+    <span class="st">"claude-sonnet-4-6"</span>: {<span class="st">"in"</span>:  <span class="nb">3.00</span>, <span class="st">"out"</span>: <span class="nb">15.00</span>},
+    <span class="st">"claude-haiku-4-5-20251001"</span>:  {<span class="st">"in"</span>:  <span class="nb">0.80</span>, <span class="st">"out"</span>:  <span class="nb">4.00</span>},
+    <span class="st">"gpt-4o"</span>:            {<span class="st">"in"</span>:  <span class="nb">5.00</span>, <span class="st">"out"</span>: <span class="nb">15.00</span>},
+    <span class="st">"gpt-4o-mini"</span>:       {<span class="st">"in"</span>:  <span class="nb">0.15</span>, <span class="st">"out"</span>:  <span class="nb">0.60</span>},
+}
+
+<span class="kw">class</span> <span class="cls">CostGuardian</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, budget_tokens: int = <span class="nb">100000</span>, budget_usd: float = <span class="nb">None</span>):
+        self.budget_tokens = budget_tokens
+        self.budget_usd = budget_usd
+        self.tokens_used: int = <span class="nb">0</span>
+        self.usd_used: float = <span class="nb">0.0</span>
+        self._history: <span class="fn">list</span>[<span class="fn">tuple</span>] = []  <span class="cm"># (step_num, tokens_in, tokens_out)</span>
+
+    <span class="kw">def</span> <span class="fn">record</span>(self, event: <span class="cls">StepEvent</span>):
+        self.tokens_used += event.tokens_in + event.tokens_out
+        self._history.<span class="fn">append</span>((event.step_number, event.tokens_in, event.tokens_out))
+
+    <span class="kw">def</span> <span class="fn">is_over_budget</span>(self) -> bool:
+        <span class="kw">return</span> self.tokens_used >= self.budget_tokens
+
+    <span class="kw">def</span> <span class="fn">remaining</span>(self) -> int:
+        <span class="kw">return</span> <span class="fn">max</span>(<span class="nb">0</span>, self.budget_tokens - self.tokens_used)
+
+    <span class="kw">def</span> <span class="fn">projected_total</span>(self) -> int:
+        <span class="st">"""
+        Project total token spend at current burn rate.
+        If projected > budget * 0.85, return a budget_pressure signal.
+        Uses rolling average of last 5 steps.
+        """</span>
+        <span class="kw">if</span> <span class="fn">len</span>(self._history) < <span class="nb">3</span>:
+            <span class="kw">return</span> self.tokens_used
+
+        recent = self._history[-<span class="nb">5</span>:]
+        avg_per_step = <span class="fn">sum</span>(i + o <span class="kw">for</span> _, i, o <span class="kw">in</span> recent) / <span class="fn">len</span>(recent)
+        <span class="cm"># Assume agent still has ~10 steps left (conservative)</span>
+        estimated_remaining_steps = <span class="nb">10</span>
+        projected = self.tokens_used + (avg_per_step * estimated_remaining_steps)
+        <span class="kw">return</span> <span class="fn">int</span>(projected)
+
+    <span class="kw">def</span> <span class="fn">should_warn</span>(self) -> bool:
+        <span class="st">"""Fire warning at 85% of budget — before it's too late."""</span>
+        <span class="kw">return</span> self.<span class="fn">projected_total</span>() > self.budget_tokens * <span class="nb">0.85</span>
+
+    <span class="kw">def</span> <span class="fn">cost_usd</span>(self, model: str = <span class="st">"claude-sonnet-4-6"</span>) -> float:
+        prices = MODEL_COSTS.<span class="fn">get</span>(model, MODEL_COSTS[<span class="st">"claude-sonnet-4-6"</span>])
+        total_in  = <span class="fn">sum</span>(i <span class="kw">for</span> _, i, _ <span class="kw">in</span> self._history) / <span class="nb">1_000_000</span>
+        total_out = <span class="fn">sum</span>(o <span class="kw">for</span> _, _, o <span class="kw">in</span> self._history) / <span class="nb">1_000_000</span>
+        <span class="kw">return</span> (total_in * prices[<span class="st">"in"</span>]) + (total_out * prices[<span class="st">"out"</span>])
+
+    <span class="kw">def</span> <span class="fn">summary</span>(self) -> dict:
+        <span class="kw">return</span> {
+            <span class="st">"tokens_used"</span>: self.tokens_used,
+            <span class="st">"tokens_budget"</span>: self.budget_tokens,
+            <span class="st">"tokens_remaining"</span>: self.<span class="fn">remaining</span>(),
+            <span class="st">"projected_total"</span>: self.<span class="fn">projected_total</span>(),
+            <span class="st">"over_budget"</span>: self.<span class="fn">is_over_budget</span>(),
+            <span class="st">"estimated_cost_usd"</span>: self.<span class="fn">cost_usd</span>(),
+        }</pre>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(4)">← Recovery</button>
+    <button class="btn btn-primary" onclick="showPhase(6)">Phase 6: Dashboard →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 6: DASHBOARD ─── -->
+<div class="phase" id="phase-6">
+  <div class="phase-label">Phase 6 · Week 8</div>
+  <h2>Terminal dashboard + report</h2>
+  <div class="phase-time">~1 day · Makes your tool feel real to users</div>
+
+  <p>Use the <code>rich</code> library to print a live dashboard in the terminal after each run. This is what users screenshot and share.</p>
+
+  <h3>session.py — the run context + report</h3>
+  <pre><span class="kw">from</span> rich.console <span class="kw">import</span> <span class="cls">Console</span>
+<span class="kw">from</span> rich.table <span class="kw">import</span> <span class="cls">Table</span>
+<span class="kw">from</span> rich.panel <span class="kw">import</span> <span class="cls">Panel</span>
+<span class="kw">from</span> rich <span class="kw">import</span> print <span class="kw">as</span> rprint
+<span class="kw">from</span> .models <span class="kw">import</span> <span class="cls">FailureSignal</span>
+<span class="kw">from</span> .state <span class="kw">import</span> <span class="cls">CheckpointStore</span>
+<span class="kw">from</span> .cost <span class="kw">import</span> <span class="cls">CostGuardian</span>
+<span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="kw">class</span> <span class="cls">GuardSession</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, run_id: str, guard):
+        self.run_id = run_id
+        self.guard = guard
+        self.signals_fired = []
+        self.recovery_actions = []
+        self.console = <span class="cls">Console</span>()
+
+    <span class="kw">def</span> <span class="fn">on_signal</span>(self, signal: <span class="cls">FailureSignal</span>):
+        self.signals_fired.<span class="fn">append</span>(signal)
+        <span class="kw">if</span> signal.recommended_action == <span class="st">"abort"</span>:
+            self.console.<span class="fn">print</span>(<span class="st">f"[bold red]⛔ ABORT signal at step {signal.step_number}: {signal.detail}[/]"</span>)
+        <span class="kw">elif</span> signal.recommended_action == <span class="st">"redirect"</span>:
+            self.console.<span class="fn">print</span>(<span class="st">f"[yellow]⚠️  Redirect signal at step {signal.step_number}: {signal.detail}[/]"</span>)
+
+    <span class="kw">def</span> <span class="fn">on_budget_exceeded</span>(self, remaining: int):
+        self.console.<span class="fn">print</span>(<span class="st">f"[bold red]💰 Budget exceeded. {remaining} tokens remain in budget.[/]"</span>)
+
+    <span class="kw">def</span> <span class="fn">report</span>(self, cost: <span class="cls">CostGuardian</span> = <span class="nb">None</span>, store: <span class="cls">CheckpointStore</span> = <span class="nb">None</span>) -> str:
+        <span class="cm"># Print a rich table to terminal</span>
+        table = <span class="cls">Table</span>(title=<span class="st">f"AgentGuard Report — Run {self.run_id}"</span>, show_lines=<span class="nb">True</span>)
+        table.<span class="fn">add_column</span>(<span class="st">"Metric"</span>, style=<span class="st">"cyan"</span>)
+        table.<span class="fn">add_column</span>(<span class="st">"Value"</span>, style=<span class="st">"white"</span>)
+
+        table.<span class="fn">add_row</span>(<span class="st">"Signals fired"</span>, <span class="fn">str</span>(<span class="fn">len</span>(self.signals_fired)))
+        table.<span class="fn">add_row</span>(<span class="st">"Recovery actions"</span>, <span class="fn">str</span>(<span class="fn">len</span>(self.recovery_actions)))
+
+        <span class="kw">if</span> cost:
+            summary = cost.<span class="fn">summary</span>()
+            table.<span class="fn">add_row</span>(<span class="st">"Tokens used"</span>, <span class="st">f"{summary['tokens_used']:,}"</span>)
+            table.<span class="fn">add_row</span>(<span class="st">"Est. cost (USD)"</span>, <span class="st">f"${summary['estimated_cost_usd']:.4f}"</span>)
+            table.<span class="fn">add_row</span>(<span class="st">"Over budget?"</span>, <span class="st">"YES ⛔"</span> <span class="kw">if</span> summary[<span class="st">'over_budget'</span>] <span class="kw">else</span> <span class="st">"No ✅"</span>)
+
+        <span class="kw">if</span> store:
+            steps = store.<span class="fn">all_steps</span>()
+            table.<span class="fn">add_row</span>(<span class="st">"Steps recorded"</span>, <span class="fn">str</span>(<span class="fn">len</span>(steps)))
+
+        self.console.<span class="fn">print</span>(table)
+        <span class="kw">return</span> <span class="st">"Report printed"</span>
+
+    <span class="kw">def</span> <span class="fn">__enter__</span>(self):
+        <span class="kw">return</span> self
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(self, *args):
+        self.console.<span class="fn">print</span>(<span class="st">"[dim]AgentGuard session closed.[/]"</span>)</pre>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(5)">← Cost Guardian</button>
+    <button class="btn btn-primary" onclick="showPhase(7)">Phase 7: Ship It →</button>
+  </div>
+</div>
+
+<!-- ─── PHASE 7: SHIP IT ─── -->
+<div class="phase" id="phase-7">
+  <div class="phase-label">Phase 7 · Week 9–10</div>
+  <h2>Ship it & get users</h2>
+  <div class="phase-time">~1 week · From working code to first users</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#8b5cf6"></div>
+      <div class="tl-week">Week 1–2</div>
+      <div class="tl-title">Project structure + data models</div>
+      <div class="tl-desc">Folder structure, pyproject.toml, StepEvent/FailureSignal models. Write first unit tests for models.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#3b82f6"></div>
+      <div class="tl-week">Week 2–3</div>
+      <div class="tl-title">Interceptor working end-to-end</div>
+      <div class="tl-desc">OTel SpanProcessor registered, capturing spans from LangChain + OpenAI. Print raw step events to terminal. Milestone: see every tool call printed live.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#10b981"></div>
+      <div class="tl-week">Week 3–5</div>
+      <div class="tl-title">Signal engine + tests</div>
+      <div class="tl-desc">Loop detector, info-gain collapse, error streak. Write tests that simulate bad agent runs and verify signals fire correctly.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#f59e0b"></div>
+      <div class="tl-week">Week 5–7</div>
+      <div class="tl-title">Checkpoint store + recovery router</div>
+      <div class="tl-desc">SQLite checkpoints after every step. Recovery router classifying failure types and returning action dicts. Test with simulated crashes.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#ef4444"></div>
+      <div class="tl-week">Week 7</div>
+      <div class="tl-title">Cost guardian</div>
+      <div class="tl-desc">Token recording, projection, budget enforcement. Downgrade model when threshold hit.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#a78bfa"></div>
+      <div class="tl-week">Week 8</div>
+      <div class="tl-title">Terminal dashboard + report</div>
+      <div class="tl-desc">Rich terminal output. Run a real agent wrapped with Guard, screenshot the report.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#34d399"></div>
+      <div class="tl-week">Week 9–10</div>
+      <div class="tl-title">Publish + share</div>
+      <div class="tl-desc">pip publish, GitHub README with demo gif, post on r/MachineLearning and r/LangChain. The two-line usage API is your hook.</div>
+    </div>
+  </div>
+
+  <h3>Where to share it for maximum impact</h3>
+  <table class="stack-table">
+    <tr><th>Platform</th><th>What to post</th><th>Why it works</th></tr>
+    <tr><td>r/MachineLearning</td><td>"I built a live agent failure predictor — stops wasted tokens before the agent crashes, not after"</td><td>High signal audience, will give real feedback</td></tr>
+    <tr><td>r/LangChain</td><td>Demo of your SDK wrapping a LangChain agent with 2 lines</td><td>Direct audience: people who already have agents and hit this pain</td></tr>
+    <tr><td>Hacker News (Show HN)</td><td>Show HN: AgentGuard — catch agent failures mid-run, not post-mortem</td><td>Wide reach, good for library launches</td></tr>
+    <tr><td>LinkedIn</td><td>Thread: "58% of agent tokens are wasted after the first warning signal — so I built a tool that catches them"</td><td>Reaches ML engineers at companies</td></tr>
+    <tr><td>GitHub</td><td>Working examples folder with LangChain + OpenAI Agents SDK</td><td>Stars = credibility for future job/product</td></tr>
+  </table>
+
+  <h3>Your README hook (the first 5 lines matter most)</h3>
+  <pre><span class="cm"># AgentGuard</span>
+
+<span class="st">Stop burning tokens on agents you know are going to fail.</span>
+
+<span class="st">AgentGuard wraps any LLM agent and fires live signals when it detects</span>
+<span class="st">loops, information collapse, or budget pressure — before failure locks in.</span>
+
+pip install agentguard</pre>
+
+  <div class="success">
+    <div class="success-title">✅ What "done" looks like</div>
+    <p>A user adds 2 lines to their existing agent. AgentGuard catches a loop at step 7, saves 43,000 tokens, and prints a report showing exactly where the agent went wrong and why it was stopped. That story, in a demo gif or short video, is your launch.</p>
+  </div>
+
+  <h3>Full tech stack reference</h3>
+  <table class="stack-table">
+    <tr><th>Component</th><th>Library</th><th>Why</th></tr>
+    <tr><td>Span interception</td><td>opentelemetry-sdk (SpanProcessor)</td><td>Framework-agnostic, standard, works with LangChain/OpenAI/Anthropic auto-instrumentation</td></tr>
+    <tr><td>Framework hooks</td><td>opentelemetry-instrumentation-langchain, -openai, -anthropic</td><td>Zero-code agent instrumentation — 1 import, done</td></tr>
+    <tr><td>Data models</td><td>Pydantic v2</td><td>Fast, validates, serializes to/from JSON for SQLite storage</td></tr>
+    <tr><td>Dev state store</td><td>sqlite3 (stdlib)</td><td>Zero infra, works locally, easy to inspect</td></tr>
+    <tr><td>Prod state store</td><td>Redis (redis-py)</td><td>&lt;1ms reads, TTL support, same API as SQLite layer</td></tr>
+    <tr><td>Token counting</td><td>tiktoken</td><td>Exact token counts without API calls</td></tr>
+    <tr><td>Terminal output</td><td>rich</td><td>Beautiful tables, color, progress — makes your tool feel polished</td></tr>
+    <tr><td>HTTP alerts</td><td>httpx</td><td>Async-compatible webhook delivery for escalation</td></tr>
+  </table>
+
+  <div class="bottom-nav">
+    <button class="btn btn-ghost" onclick="showPhase(6)">← Dashboard</button>
+    <button class="btn btn-primary" onclick="showPhase(0)">Back to Overview</button>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+const phases = document.querySelectorAll('.phase');
+const navBtns = document.querySelectorAll('.nav button');
+
+function showPhase(n) {
+  phases.forEach((p, i) => p.classList.toggle('active', i === n));
+  navBtns.forEach((b, i) => b.classList.toggle('active', i === n));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
