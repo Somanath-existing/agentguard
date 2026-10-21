@@ -43,20 +43,6 @@ Unlike traditional post-hoc observability platforms or heavy LLM-based guardrail
 
 ---
 
-## Architectural Comparison
-
-| Dimension | **AgentGuard** | Guardrails AI | NVIDIA NeMo | Langfuse / Portkey |
-| :--- | :--- | :--- | :--- | :--- |
-| **Interception Point** | In-Process OTel Span | Application Wrapper | Proxy / Microservice | Post-Hoc Telemetry |
-| **Added Latency** | **~10–90 µs (core engine)** | 200 ms – 1,200 ms | 50 ms – 300 ms | 0 ms (Async Logging) |
-| **Token Overhead** | **0 Tokens (Pure Math)** | +100% (Second LLM) | Programmable Flows | 0 Tokens |
-| **Runtime Enforcement** | Synchronous Kill Switch | Interception | Rail Enforcement | Passive Tracing |
-| **Taint Tracking** | **Step-Level DAG** | ❌ None | ❌ None | ❌ None |
-| **Predictive Defense** | **Z-Score Trajectory** | ❌ None | ❌ None | ❌ None |
-| **Privacy Model** | SHA-256 Digest Only | Stores Raw Text | Stores Raw Text | Stores Raw Text |
-
----
-
 ## Key Technical Primitives
 
 ### 1. 🛡️ Semantic Taint Tracking (Information Flow Provenance)
