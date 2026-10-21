@@ -1,6 +1,6 @@
 # Contributing to AgentGuard
 
-Thank you for your interest in contributing to **AgentGuard**! We welcome bug reports, framework adapters, recovery heuristics, documentation updates, and pull requests.
+Thank you for your interest in contributing to **AgentGuard**. We welcome bug reports, framework adapters, recovery heuristics, documentation updates, and pull requests.
 
 ---
 
@@ -62,7 +62,7 @@ mypy src/
 
 ## Areas We Welcome Contributions (Good First Issues)
 
-We actively encourage contributions in these areas:
+We actively encourage contributions in these areas (see [open issues](https://github.com/Somanath-existing/agentguard/issues?q=label%3A%22good+first+issue%22)):
 
 * **Framework Adapters:**
   * Native callback integration for **CrewAI**

@@ -26,7 +26,7 @@ Unlike traditional post-hoc observability platforms or heavy LLM-based guardrail
 │                                                                         │
 │  ┌────────────────────┐  ┌────────────────────┐  ┌───────────────────┐  │
 │  │   Semantic Taint   │  │ Predictive Failure │  │  Semantic Loop    │  │
-│  │  Tracking (n-gram) │  │ Engine (Z-Score)   │  │  (TF-IDF / Vector)│  │
+│  │  Tracking (n-gram) │  │ Engine (Z-Score)   │  │ (all-MiniLM-L6-v2)│  │
 │  └─────────┬──────────┘  └─────────┬──────────┘  └─────────┬─────────┘  │
 │            └───────────────────────┼───────────────────────┘            │
 │                                    ▼                                    │
@@ -54,8 +54,8 @@ Unlike traditional post-hoc observability platforms or heavy LLM-based guardrail
 *   **Solution:** Uses Welford's online variance algorithm to maintain dynamic per-agent behavioral baselines ($Z$-scores). Evaluates output size slope, hash entropy, and token acceleration in real-time to forecast failures 2–3 steps **before** they manifest—without calling an external LLM.
 
 ### 3. 🔄 Evasion-Resistant Semantic Loop Detection
-*   **Problem:** Adversaries or rogue agent loops bypass exact string hash-matching by adding minor variations (whitespace, punctuation, or paraphrasing).
-*   **Solution:** Replaces naive exact string matching with character n-gram cosine similarity (with a fallback to `sentence-transformers` vector embeddings). Detects paraphrased and semantic loops across sliding windows.
+*   **Problem:** Adversaries or rogue agent loops bypass exact string hash-matching by adding minor variations (whitespace, punctuation, or paraphrasing). Furthermore, in multi-turn architectures, message buffers continually accumulate prior turns and tool outputs; comparing full historical buffers causes >95% false-positive similarity.
+*   **Solution:** Uses dense vector embeddings via `sentence-transformers` (`all-MiniLM-L6-v2`, 384-dim) with an offline character n-gram TF-IDF fallback. Includes turn isolation (`extract_active_prompt`) to strip cumulative conversation history so similarity checks compare the *actual active turn* rather than the growing chat buffer. Detects semantic stagnation and velocity collapses across sliding windows without false alarms.
 
 ### 4. 🧠 UCB1 Multi-Armed Bandit Recovery Router
 *   **Problem:** Static recovery strategies (always retrying or always replanning) fail in dynamic production environments.
@@ -127,7 +127,7 @@ pip install agentguard
 pip install "agentguard[all]"
 ```
 
-### 2-Line Integration
+### Minimal Integration
 
 Wrap your existing agent invocation inside `guard.watch()`. No architectural refactoring is required:
 
@@ -206,7 +206,7 @@ with orchestrator.watch("orch-001"):
 
 ## 🗺️ Roadmap & Contributing
 
-We actively welcome community contributions! Check out our [Contributing Guide](CONTRIBUTING.md) to get started.
+We actively welcome community contributions. Check out our [Contributing Guide](CONTRIBUTING.md) to get started.
 
 * [ ] **CrewAI & AutoGen Adapters:** Native callback and listener wrappers for seamless drop-in integration.
 * [ ] **PostgreSQL / AWS RDS Backend:** Durable SQL audit log storage alongside SQLite and Redis.
