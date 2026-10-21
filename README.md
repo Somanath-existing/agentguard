@@ -11,9 +11,9 @@
 
 ## Executive Summary
 
-**AgentGuard** is an in-process runtime security engine designed for multi-agent LLM systems. Operating directly on OpenTelemetry (`OTel`) telemetry spans, AgentGuard enforces security policies, prevents token-burn loops, and blocks indirect prompt injections in-process with **zero extra LLM calls** and minimal overhead.
+**AgentGuard** is an early-stage, in-process runtime guardrail framework designed for autonomous multi-agent LLM systems. Operating directly on standard OpenTelemetry (`OTel`) telemetry spans, AgentGuard monitors agent execution trajectories, prevents token-burn loops, and provides post-mortem causal analysis with **zero additional hosted LLM calls**.
 
-Unlike traditional post-hoc observability platforms or heavy LLM-based guardrails (which add hundreds of milliseconds of API latency and double token costs), AgentGuard acts as an active **synchronous runtime kill switch** powered by online statistical algorithms and information-flow taint tracking.
+While content guardrails focus on single-prompt safety policies, API gateways manage model traffic, and observability platforms help inspect traces, AgentGuard analyzes multi-step execution trajectories using local statistical signals, semantic similarity, and information-flow taint tracking. It offers an emerging, complementary approach for developers experimenting with in-process runtime monitoring and adaptive recovery strategies in Python-based agent workflows.
 
 ```
                   ┌─────────────────────────────────────────┐

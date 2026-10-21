@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agentguard"
 version = "0.3.0"
-description = "Zero-overhead runtime security for LLM agents — taint tracking, predictive failure forecasting, and bandit-driven recovery"
+description = "Lightweight runtime guardrails for autonomous LLM agents — trajectory tracking, statistical baselines, and adaptive recovery"
 authors = [
     { name = "Somanath", email = "somanath@users.noreply.github.com" },
 ]
