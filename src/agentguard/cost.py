@@ -152,10 +152,6 @@ class CostGuardian:
 
         recent = self._history[-5:]
         total_tokens = sum(i + o for _, i, o in recent)
-        # Guard against division-by-zero if recent list is somehow empty
-        if not recent:
-            return self._tokens_used
-
         avg_per_step = total_tokens / len(recent)
         return int(self._tokens_used + avg_per_step * self._assumed_remaining)
 

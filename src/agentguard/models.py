@@ -3,7 +3,7 @@ agentguard/models.py
 --------------------
 Pydantic v2 data models for all AgentGuard events.
 
-Security notes (FAANG-grade):
+Security notes:
   - timestamp uses Field(default_factory=...) — NOT datetime.utcnow() as a
     default value, which evaluates once at class definition time and gives every
     instance the same timestamp (forensic corruption).
@@ -180,7 +180,6 @@ class StepEvent(BaseModel):
     @field_validator("run_id")
     @classmethod
     def run_id_safe(cls, v: str) -> str:
-        import re
         clean = re.sub(r"[^a-zA-Z0-9_-]", "_", v)[:64]
         if not clean:
             raise ValueError("run_id must contain at least one alphanumeric character")

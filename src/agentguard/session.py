@@ -90,7 +90,7 @@ class GuardSession:
         self._recovery_actions: list[dict] = []
         self._aborted: bool = False
         self._abort_reason: str = ""
-        self._last_signal_type: Optional[str] = None  # for recovery outcome tracking (Idea 3)
+        self._last_signal_type: Optional[str] = None  # for recovery outcome tracking
 
         # Force UTF-8 output on Windows to avoid CP1252 emoji encoding errors
         self._console = Console(file=SafeTextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace") if hasattr(sys.stdout, 'buffer') else sys.stdout, highlight=True)
@@ -157,7 +157,7 @@ class GuardSession:
             action = self._recovery.handle(signal)
             with self._lock:
                 self._recovery_actions.append(action)
-                self._last_signal_type = signal.signal_type  # Idea 3: track for outcome
+                self._last_signal_type = signal.signal_type  # track for recovery outcome
 
             self._console.print(
                 f"[dim]   → Recovery: {action['action']} "
@@ -223,7 +223,7 @@ class GuardSession:
         was_guard_abort = exc_type is AgentGuardAbort
         clean_exit = exc_type is None
 
-        # Idea 3: record recovery outcome before closing store
+        # Record recovery outcome before closing store
         self._record_recovery_outcome(succeeded=clean_exit)
 
         self._store.save_audit_event(
@@ -356,7 +356,7 @@ class GuardSession:
         )
 
     # ------------------------------------------------------------------
-    # Causal Replay — Idea 2
+    # Causal Replay
     # ------------------------------------------------------------------
 
     def explain_failure(self) -> dict:
@@ -405,7 +405,7 @@ class GuardSession:
         return self._taint.summary()
 
     # ------------------------------------------------------------------
-    # Recovery outcome recording — Idea 3
+    # Recovery outcome recording
     # ------------------------------------------------------------------
 
     def _record_recovery_outcome(self, succeeded: bool) -> None:

@@ -1,5 +1,5 @@
 """
-Tests for all 5 novel ideas implemented in AgentGuard.
+Tests for security features and core algorithms in AgentGuard.
 """
 import os
 import tempfile
@@ -17,7 +17,7 @@ from agentguard.state import CheckpointStore
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# IDEA 4: Indirect Prompt Injection Detection
+# Indirect Prompt Injection Detection
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestInjectionDetection:
@@ -87,7 +87,7 @@ class TestInjectionDetection:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# IDEA 1: Behavioral Fingerprinting (Adaptive Baselines)
+# Behavioral Fingerprinting (Adaptive Baselines)
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestRunningStats:
@@ -201,7 +201,7 @@ class TestBaselineStore:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# IDEA 2: Causal Replay
+# Causal Replay
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestCausalReplay:
@@ -260,7 +260,7 @@ class TestCausalReplay:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# IDEA 3: Recovery Memory
+# Recovery Memory
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestRecoveryMemory:
@@ -324,7 +324,7 @@ class TestRecoveryMemory:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# IDEA 5: Multi-Agent Topology
+# Multi-Agent Topology
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestTopologyTracker:
@@ -389,7 +389,7 @@ class TestTopologyTracker:
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# INTEGRATION: Baseline → SignalEngine (Idea 1 integration)
+# INTEGRATION: Baseline → SignalEngine
 # ═══════════════════════════════════════════════════════════════════════
 
 class TestBaselineSignalIntegration:

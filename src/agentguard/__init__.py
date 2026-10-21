@@ -125,15 +125,15 @@ class Guard:
         tool_denylist: Optional[list[str]] = None,
         tool_arg_inspection: bool = True,
         tool_custom_validators: Optional[list[Callable[[str, str], Optional[str]]]] = None,
-        # ── Idea 1: Behavioral Fingerprinting ──────────────────────────
+        # ── Adaptive Behavioral Baseline ─────────────────────────────
         agent_type: str = "default",
         anomaly_threshold: float = 2.5,
         baseline_dir: str = "./agentguard_baselines",
         enable_baseline: bool = True,
-        # ── Idea 3: Recovery Memory ─────────────────────────────────────
+        # ── Cross-Run Recovery Memory ────────────────────────────────────
         memory_dir: str = "./agentguard_memory",
         enable_memory: bool = True,
-        # ── Idea 5: Multi-Agent Topology ────────────────────────────────
+        # ── Multi-Agent Topology ─────────────────────────────────────────
         topology: Optional[TopologyTracker] = None,
         parent_run_id: Optional[str] = None,
         # ── Taint Tracking ──────────────────────────────────────────────
@@ -163,7 +163,7 @@ class Guard:
         self._enable_taint = enable_taint
         self._taint_chunk_size = taint_chunk_size
 
-        # Idea 1: one BaselineStore per agent_type — persists across watch() calls
+        # One BaselineStore per agent_type — persists across watch() calls
         self._baseline: Optional[BaselineStore] = (
             BaselineStore(
                 agent_type=agent_type,
@@ -174,7 +174,7 @@ class Guard:
             else None
         )
 
-        # Idea 3: one RecoveryMemory per Guard — persists across watch() calls
+        # One RecoveryMemory per Guard — persists across watch() calls
         self._memory: Optional[RecoveryMemory] = (
             RecoveryMemory(base_dir=memory_dir)
             if enable_memory
@@ -239,7 +239,7 @@ class Guard:
         """
         safe_run_id = sanitize_run_id(run_id)
 
-        # Idea 5: register with shared topology before doing anything else
+        # Register with shared topology before doing anything else
         if self._topology:
             self._topology.register(
                 run_id=safe_run_id,
@@ -362,7 +362,7 @@ class Guard:
         The OTel SpanProcessor (on_end) is always synchronous by design — this
         is correct because OTel itself calls on_end synchronously regardless of
         whether the host app is async.  The critical sections inside on_end are
-        sub-millisecond (hash computations, deque appends, SQLite WAL writes)
+        lightweight (hash computations, deque appends, SQLite WAL writes)
         and will not meaningfully block the event loop.
 
         Usage:

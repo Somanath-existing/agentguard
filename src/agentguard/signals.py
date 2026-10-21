@@ -43,7 +43,7 @@ class SignalEngine:
         self,
         run_id: str,
         window: int = 10,
-        baseline: Optional["BaselineStore"] = None,  # Idea 1: adaptive baseline
+        baseline: Optional["BaselineStore"] = None,  # Adaptive baseline
         enable_semantic_loop: bool = True,
     ):
         self.run_id = run_id
@@ -90,7 +90,7 @@ class SignalEngine:
                 self._check_loop(event, raw_input=raw_input),
                 self._check_info_gain(event),
                 self._check_error_streak(event),
-                self._check_baseline_anomaly(event),  # Idea 1
+                self._check_baseline_anomaly(event),
                 self._check_predictive_failure(event),
             ]
             real = [s for s in candidates if s is not None]
@@ -221,7 +221,7 @@ class SignalEngine:
     # ------------------------------------------------------------------
 
     # ------------------------------------------------------------------
-    # Detector 4: Adaptive baseline anomaly (Idea 1)
+    # Detector 4: Adaptive baseline anomaly
     # ------------------------------------------------------------------
 
     def _check_baseline_anomaly(self, event: StepEvent) -> Optional[FailureSignal]:

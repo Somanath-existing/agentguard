@@ -88,7 +88,7 @@ def run_demo():
     except AgentGuardAbort as e:
         print(f"\n[!!!] AgentGuard Aborted execution: {e}")
         
-        # Explain the failure automatically (Idea 2)
+        # Explain the failure automatically (Causal Replay)
         print("\n--- Post-Mortem Root Cause Analysis ---")
         cause = session.explain_failure()
         for k, v in cause.items():
